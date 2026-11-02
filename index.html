@@ -72,8 +72,14 @@ button{cursor:pointer;touch-action:manipulation}
 .remove-one{border:0;background:transparent;color:#999;padding:5px 0 5px 8px;font-size:10px}
 .empty{padding:27px;text-align:center;color:var(--muted);font-size:11px;line-height:1.8;border:1px dashed #d7d9df;border-radius:15px;background:#ffffff80}
 .footer{text-align:center;color:#9699a2;font-size:9px;line-height:1.8;margin-top:30px}
+.creator-credit{display:inline-block;margin-top:7px;color:#777b84;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
 .toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,20px);background:#25272d;color:#fff;padding:12px 17px;border-radius:12px;font-size:11px;box-shadow:0 8px 28px #0002;opacity:0;pointer-events:none;transition:.25s;z-index:5;max-width:calc(100% - 30px);text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+
+.withdraw-section{margin-top:28px}.withdraw-card{background:#fff;border:1px solid #e4e5ea;border-radius:20px;padding:20px;box-shadow:var(--glow)}
+.withdraw-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0}.step{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fafafd}.step.active{border-color:#888e9b;box-shadow:0 0 0 2px #dfe1e855}.step-number{font-size:9px;color:var(--muted);letter-spacing:.15em}.step h3{font-size:12px;margin:8px 0}.field-label{display:block;font-size:10px;color:var(--muted);margin:13px 0 7px}.field{width:100%;border:1px solid var(--line);border-radius:11px;background:#fafafa;padding:12px;outline:none;font:inherit;font-size:12px}.field:focus{border-color:#a6aab4;box-shadow:0 0 0 3px #d9dbe344}.withdraw-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.withdraw-actions .btn{flex:1}.withdraw-note{font-size:10px;color:var(--muted);line-height:1.8;margin-top:10px}
+.receipt-wrap{display:none;margin-top:18px}.receipt{background:#fff;color:#202126;border:1px solid #e6e6e6;border-radius:20px;padding:24px;max-width:720px;margin:auto;box-shadow:0 8px 30px #7772;font-family:Consolas,"Liberation Mono",monospace}.receipt-brand{text-align:center;font-family:Georgia,serif;font-size:clamp(25px,5vw,42px);font-weight:900;letter-spacing:.02em;margin:0}.receipt-sub{text-align:center;font-size:12px;font-weight:800;margin:9px 0 22px}.receipt-line{border:0;border-top:2px dashed #c6c7cb;margin:20px 0}.receipt-row{display:flex;justify-content:space-between;gap:15px;font-size:12px;font-weight:700;margin:12px 0}.receipt-row span:last-child{text-align:right;overflow-wrap:anywhere}.receipt-section-title{font-weight:900;font-size:13px;margin:0 0 14px}.receipt-purpose{font-size:12px;line-height:1.8;overflow-wrap:anywhere}.receipt-barcode{height:70px;margin:24px 8px 8px;background:repeating-linear-gradient(90deg,#222 0 2px,transparent 2px 5px,#222 5px 6px,transparent 6px 9px,#222 9px 12px,transparent 12px 15px);position:relative}.receipt-barcode:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 0 8%,#fff 8% 8.4%,transparent 8.4% 21%,#fff 21% 21.5%,transparent 21.5% 49%,#fff 49% 49.5%,transparent 49.5% 76%,#fff 76% 76.5%,transparent 76.5%)}.receipt-thanks{text-align:center;font-weight:800;font-size:11px;line-height:1.8;margin-top:16px}.receipt-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:13px}
+@media(max-width:760px){.withdraw-steps{grid-template-columns:1fr}.receipt{padding:18px 14px}.receipt-row{font-size:10px}}
 @media(max-width:760px){.money-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard{grid-template-columns:1fr}.hero{padding:23px}.money-photo{height:112px}.wrap{padding:17px 13px 35px}.add-panel{align-items:flex-start;flex-direction:column}.add-actions{width:100%}.add-actions .btn{flex:1}}
 @media(min-width:761px) and (max-width:950px){.money-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
@@ -137,7 +143,38 @@ button{cursor:pointer;touch-action:manipulation}
     </div>
     <div class="history-list" id="historyList"></div>
   </section>
-  <footer class="footer">SAVING INDONESIAN MONEY<br>WHITE · SILVER GLOW · MONO EDITION<br><span>Data disimpan secara lokal di browser ini.</span></footer>
+  <section class="withdraw-section">
+    <div class="section-head"><div><h2>Ambil uang tabungan</h2><p>Isi nominal dan tujuan penggunaan uang. Jumlah penarikan tidak boleh melebihi saldo tabungan.</p></div><span class="eyebrow">WITHDRAW</span></div>
+    <div class="withdraw-card">
+      <div class="withdraw-steps">
+        <div class="step active" id="stepOne"><div class="step-number">LANGKAH 01</div><h3>Nominal yang diambil</h3><label class="field-label" for="withdrawAmount">Nominal (Rupiah)</label><input class="field" id="withdrawAmount" type="number" min="1" step="1000" inputmode="numeric" placeholder="Contoh: 10000"></div>
+        <div class="step" id="stepTwo"><div class="step-number">LANGKAH 02</div><h3>Tujuan penggunaan uang</h3><label class="field-label" for="withdrawPurpose">Uang ini diambil untuk apa?</label><textarea class="field" id="withdrawPurpose" rows="3" maxlength="240" placeholder="Contoh: membeli alat tulis sekolah"></textarea></div>
+      </div>
+      <div class="withdraw-actions"><button class="btn secondary" id="resetWithdraw">Kosongkan</button><button class="btn" id="makeReceipt">Buat detail transaksi</button></div>
+      <div class="withdraw-note" id="withdrawBalanceNote">Saldo tersedia: Rp0</div>
+    </div>
+    <div class="receipt-wrap" id="receiptWrap">
+      <div class="receipt" id="receipt">
+        <h2 class="receipt-brand">MONEY SAVING ID</h2><div class="receipt-sub">DETAIL TRANSAKSI PENARIKAN</div>
+        <hr class="receipt-line">
+        <div class="receipt-row"><span>NO TRX</span><span id="receiptId">SENDY-000000</span></div>
+        <div class="receipt-row"><span>STATUS</span><span>SUCCESS</span></div>
+        <div class="receipt-row"><span>TANGGAL</span><span id="receiptDate">-</span></div>
+        <div class="receipt-row"><span>JAM</span><span id="receiptTime">-</span></div>
+        <hr class="receipt-line">
+        <div class="receipt-section-title">DETAIL PENARIKAN</div>
+        <div class="receipt-row"><span>Nominal diambil</span><span id="receiptAmount">Rp0</span></div>
+        <div class="receipt-row"><span>Sisa tabungan</span><span id="receiptBalance">Rp0</span></div>
+        <hr class="receipt-line">
+        <div class="receipt-section-title">TUJUAN PENGGUNAAN UANG</div><div class="receipt-purpose" id="receiptPurpose">-</div>
+        <hr class="receipt-line"><div class="receipt-row"><span>Metode</span><span>CATATAN TABUNGAN</span></div><div class="receipt-row"><span>Status</span><span>SUCCESS</span></div>
+        <hr class="receipt-line"><div class="receipt-barcode" aria-label="Dekorasi barcode"></div><div class="receipt-thanks">Terimakasih Telah menabung disini,<br>Semoga Uang Nya Dipakai dengan Baik ya!</div>
+      </div>
+      <div class="receipt-actions"><button class="btn" id="confirmWithdraw">Konfirmasi & kurangi saldo</button><button class="btn secondary" id="downloadReceipt">Simpan detail sebagai PNG</button></div>
+      <div class="withdraw-note" style="text-align:center">Saldo baru akan berkurang setelah tombol konfirmasi ditekan.</div>
+    </div>
+  </section>
+  <footer class="footer">SAVING INDONESIAN MONEY<br>WHITE · SILVER GLOW · MONO EDITION<br><span>Data disimpan secara lokal di browser ini.</span><br><span class="creator-credit">App created by Sendy</span></footer>
 </div>
 <div class="toast" id="toast"></div>
 <script>
@@ -153,6 +190,7 @@ const moneyOptions = [
 const rupiah = n => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n);
 const safeLoad = (key,fallback) => { try { const x=localStorage.getItem(key); return x===null?fallback:JSON.parse(x); } catch(e){return fallback;} };
 let savings = safeLoad('sim_savings_v1',[]);
+let pendingWithdrawal = null;
 let target = safeLoad('sim_target_v1',0);
 let selected = null;
 const grid = document.getElementById('moneyGrid');
@@ -177,23 +215,25 @@ function renderMoney(){
 }
 function renderHistory(){
   historyList.innerHTML='';
-  if(!savings.length){historyList.innerHTML='<div class="empty">Belum ada tabungan.<br>Pilih nominal uang di atas untuk memulai.</div>';return;}
+  if(!savings.length){historyList.innerHTML='<div class="empty">Belum ada transaksi.<br>Pilih nominal uang di atas untuk mulai menabung.</div>';return;}
   [...savings].reverse().forEach(item=>{
     const row=document.createElement('div');row.className='history-item';
     const date=new Date(item.date);
     const dateText=isNaN(date)?'Tanggal tidak tersedia':date.toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});
     const money = moneyOptions.find(m=>Number(m.value)===Number(item.value));
-    const imageSrc = money ? money.file : '';
+    const imageSrc = money && item.type!=='withdraw' ? money.file : '';
     const thumb = imageSrc
       ? `<img src="${imageSrc}" alt="Foto ${item.label}" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="history-fallback" style="display:none">FOTO UANG</span>`
-      : `<span class="history-fallback">FOTO UANG</span>`;
-    row.innerHTML=`<div class="history-left"><div class="history-icon">${thumb}</div><div><div class="history-title">${item.label}</div><div class="history-date">${dateText}</div></div></div><div style="display:flex;align-items:center;gap:8px"><div class="history-amount">+${rupiah(item.value)}</div><button class="remove-one" aria-label="Hapus transaksi">✕</button></div>`;
-    row.querySelector('.remove-one').addEventListener('click',()=>{savings=savings.filter(x=>x.id!==item.id);save();render();toast('Catatan tabungan dihapus.');});
+      : `<span class="history-fallback">${item.type==='withdraw'?'↘ TARIK':'FOTO UANG'}</span>`;
+    const isWithdraw=item.type==='withdraw';
+    row.innerHTML=`<div class="history-left"><div class="history-icon">${thumb}</div><div><div class="history-title">${isWithdraw?'Penarikan':'Menabung'} · ${item.label}</div><div class="history-date">${dateText}${isWithdraw&&item.purpose?' · '+escapeHtml(item.purpose):''}</div></div></div><div style="display:flex;align-items:center;gap:8px"><div class="history-amount" style="color:${isWithdraw?'#a33':'inherit'}">${isWithdraw?'−':'+'}${rupiah(item.value)}</div><button class="remove-one" aria-label="Hapus transaksi">✕</button></div>`;
+    row.querySelector('.remove-one').addEventListener('click',()=>{savings=savings.filter(x=>x.id!==item.id);save();render();toast('Catatan transaksi dihapus.');});
     historyList.appendChild(row);
   });
 }
+function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function render(){
-  const total=savings.reduce((sum,item)=>sum+Number(item.value||0),0);
+  const total=savings.reduce((sum,item)=>sum+(item.type==='withdraw'?-1:1)*Number(item.value||0),0);
   document.getElementById('total').textContent=rupiah(total);
   document.getElementById('count').textContent=savings.length;
   const percent=target>0?Math.min(100,Math.round(total/target*100)):0;
@@ -222,6 +262,53 @@ document.getElementById('clearHistory').addEventListener('click',()=>{
   if(!savings.length){toast('Riwayat masih kosong.');return;}
   if(confirm('Hapus semua riwayat tabungan? Tindakan ini tidak dapat dibatalkan.')){savings=[];save();render();toast('Semua riwayat dihapus.');}
 });
+function getBalance(){return savings.reduce((sum,item)=>sum+(item.type==='withdraw'?-1:1)*Number(item.value||0),0);}
+function updateWithdrawBalance(){const el=document.getElementById('withdrawBalanceNote');if(el)el.textContent='Saldo tersedia: '+rupiah(Math.max(0,getBalance()));}
+document.getElementById('resetWithdraw').addEventListener('click',()=>{document.getElementById('withdrawAmount').value='';document.getElementById('withdrawPurpose').value='';document.getElementById('receiptWrap').style.display='none';pendingWithdrawal=null;toast('Form penarikan dikosongkan.');});
+document.getElementById('makeReceipt').addEventListener('click',()=>{
+  const amount=Math.floor(Number(document.getElementById('withdrawAmount').value));
+  const purpose=document.getElementById('withdrawPurpose').value.trim();
+  const balance=getBalance();
+  if(!Number.isFinite(amount)||amount<=0){toast('Masukkan nominal penarikan yang valid.');return;}
+  if(amount>balance){toast('Nominal melebihi saldo tabungan.');return;}
+  if(!purpose){toast('Isi tujuan penggunaan uang terlebih dahulu.');return;}
+  const now=new Date();const trx='SENDY-'+String(Math.floor(Math.random()*1000000)).padStart(6,'0');
+  pendingWithdrawal={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),value:amount,label:rupiah(amount),purpose,date:now.toISOString(),trx};
+  document.getElementById('receiptId').textContent=trx;
+  document.getElementById('receiptDate').textContent=now.toLocaleDateString('id-ID');
+  document.getElementById('receiptTime').textContent=now.toLocaleTimeString('id-ID',{hour12:false});
+  document.getElementById('receiptAmount').textContent=rupiah(amount);
+  document.getElementById('receiptBalance').textContent=rupiah(balance-amount);
+  document.getElementById('receiptPurpose').textContent=purpose;
+  document.getElementById('receiptWrap').style.display='block';
+  document.getElementById('stepOne').classList.add('active');document.getElementById('stepTwo').classList.add('active');
+  document.getElementById('receiptWrap').scrollIntoView({behavior:'smooth',block:'start'});
+});
+document.getElementById('confirmWithdraw').addEventListener('click',()=>{
+  if(!pendingWithdrawal){toast('Buat detail transaksi terlebih dahulu.');return;}
+  if(pendingWithdrawal.value>getBalance()){toast('Saldo berubah dan tidak mencukupi. Buat ulang detail transaksi.');return;}
+  savings.push({id:pendingWithdrawal.id,value:pendingWithdrawal.value,label:rupiah(pendingWithdrawal.value),type:'withdraw',purpose:pendingWithdrawal.purpose,date:pendingWithdrawal.date,trx:pendingWithdrawal.trx});
+  save();render();updateWithdrawBalance();
+  document.getElementById('receiptWrap').style.display='none';document.getElementById('withdrawAmount').value='';document.getElementById('withdrawPurpose').value='';pendingWithdrawal=null;
+  toast('Penarikan dicatat dan saldo telah dikurangi.');
+});
+document.getElementById('downloadReceipt').addEventListener('click',()=>{
+  if(!pendingWithdrawal){toast('Buat detail transaksi terlebih dahulu.');return;}
+  const r=pendingWithdrawal;const now=new Date(r.date);const canvas=document.createElement('canvas');canvas.width=1000;canvas.height=1350;const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#f1f1f1';ctx.fillRect(0,0,1000,1350);ctx.fillStyle='#fff';roundRect(ctx,60,45,880,1215,28);ctx.fill();
+  ctx.fillStyle='#171717';ctx.textAlign='center';ctx.font='bold 56px Georgia';ctx.fillText('MONEY SAVING ID',500,130);ctx.font='bold 24px monospace';ctx.fillText('DETAIL TRANSAKSI PENARIKAN',500,178);
+  function line(y){ctx.strokeStyle='#bfc0c4';ctx.lineWidth=2;ctx.setLineDash([7,9]);ctx.beginPath();ctx.moveTo(115,y);ctx.lineTo(885,y);ctx.stroke();ctx.setLineDash([])}
+  function row(label,value,y){ctx.textAlign='left';ctx.font='bold 21px monospace';ctx.fillStyle='#202126';ctx.fillText(label,115,y);ctx.textAlign='right';ctx.fillText(value,885,y)}
+  function section(t,y){ctx.textAlign='left';ctx.font='bold 24px monospace';ctx.fillText(t,115,y)}
+  line(220);row('NO TRX',r.trx,270);row('STATUS','SUCCESS',315);row('TANGGAL',now.toLocaleDateString('id-ID'),360);row('JAM',now.toLocaleTimeString('id-ID',{hour12:false}),405);line(445);section('DETAIL PENARIKAN',495);row('Nominal diambil',rupiah(r.value),545);row('Sisa tabungan',rupiah(getBalance()-r.value),590);line(630);section('TUJUAN PENGGUNAAN UANG',680);
+  ctx.textAlign='left';ctx.font='22px monospace';const words=r.purpose.split(/\s+/);let lineText='',y=725;for(const word of words){const test=lineText?lineText+' '+word:word;if(ctx.measureText(test).width>760){ctx.fillText(lineText,115,y);lineText=word;y+=34;}else lineText=test;}if(lineText)ctx.fillText(lineText,115,y);
+  const sepY=Math.max(805,y+38);line(sepY);row('Metode','CATATAN TABUNGAN',sepY+45);row('Status','SUCCESS',sepY+90);
+  const barY=sepY+125;let x=125;while(x<875){const w=(Math.random()>.7?5:2);ctx.fillRect(x,barY,w,72);x+=w+3;}
+  ctx.textAlign='center';ctx.font='bold 18px monospace';ctx.fillText('Terimakasih Telah menabung disini,',500,barY+112);ctx.fillText('Semoga Uang Nya Dipakai dengan Baik ya!',500,barY+142);
+  function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+  const a=document.createElement('a');a.download=(r.trx||'SENDY-transaksi')+'.png';a.href=canvas.toDataURL('image/png');a.click();
+});
+updateWithdrawBalance();
 render();
 </script>
 </body>
