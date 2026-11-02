@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#f8f8fa">
+<title>Saving Indonesian Money</title>
+<style>
+:root{--ink:#202126;--muted:#777b84;--line:#e2e3e8;--silver:#c8cbd3;--paper:#fff;--soft:#f5f6f8;--glow:0 8px 30px rgba(125,130,145,.14)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(ellipse at 50% 0%,#fff 0,#f8f8fa 58%,#f0f1f4 100%);color:var(--ink);font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;min-height:100vh}
+button,input{font:inherit}
+button{cursor:pointer;touch-action:manipulation}
+.wrap{width:min(1080px,100%);margin:auto;padding:24px 18px 46px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:26px}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{width:43px;height:43px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#fff,#e4e6eb);border:1px solid #fff;box-shadow:0 4px 18px #c5c8d344;font-size:22px}
+.brand-name{font-size:13px;font-weight:900;letter-spacing:.07em}
+.brand-sub{font-size:10px;color:var(--muted);margin-top:5px;letter-spacing:.12em}
+.status{border:1px solid var(--line);background:#ffffffa8;border-radius:999px;padding:8px 11px;font-size:10px;color:#666b75;white-space:nowrap}
+.hero{border:1px solid #fff;border-radius:26px;padding:26px;background:linear-gradient(135deg,#fff 0%,#f4f5f7 60%,#e9ebef 100%);box-shadow:var(--glow);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:230px;height:230px;border-radius:50%;right:-80px;top:-100px;background:radial-gradient(circle,#fff 0%,#d8dbe3 40%,transparent 72%);opacity:.8;pointer-events:none}
+.eyebrow{font-size:10px;letter-spacing:.2em;color:#777b84;text-transform:uppercase}
+.hero h1{font-size:clamp(25px,5vw,43px);letter-spacing:-.06em;line-height:1.12;margin:13px 0 10px;max-width:650px;position:relative;z-index:1}
+.hero p{font-size:12px;line-height:1.8;color:var(--muted);max-width:540px;margin:0;position:relative;z-index:1}
+.dashboard{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin:16px 0 30px}
+.panel{background:#ffffffd9;border:1px solid #fff;border-radius:22px;padding:21px;box-shadow:var(--glow);min-width:0}
+.panel-label{font-size:10px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase}
+.total{font-size:clamp(27px,5vw,42px);font-weight:800;letter-spacing:-.06em;margin:13px 0 17px;overflow-wrap:anywhere}
+.progress-track{height:8px;background:#e8e9ed;border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#9da2ad,#454953);border-radius:99px;transition:width .35s ease}
+.progress-info{display:flex;justify-content:space-between;gap:8px;margin-top:9px;font-size:10px;color:var(--muted)}
+.target-row{display:flex;gap:8px;margin-top:14px}
+.target-row input{width:100%;min-width:0;border:1px solid var(--line);border-radius:11px;padding:11px;background:#fafafa;outline:none;font-size:12px}
+.target-row input:focus{border-color:#a6aab4;box-shadow:0 0 0 3px #d9dbe344}
+.btn{border:0;border-radius:11px;padding:11px 14px;background:#25272d;color:white;font-size:11px;font-weight:700;transition:transform .15s,box-shadow .15s}
+.btn:active{transform:scale(.98)}
+.btn.secondary{background:#f0f1f4;color:#373a42;border:1px solid #e0e2e8}
+.btn.danger{background:#fff;color:#777;border:1px solid var(--line)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}
+.stat{background:#f7f7f9;border:1px solid #eeeef2;border-radius:14px;padding:13px}
+.stat strong{display:block;font-size:18px;margin-bottom:6px}
+.stat span{font-size:9px;color:var(--muted);letter-spacing:.08em}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:15px}
+.section-head h2{font-size:17px;letter-spacing:-.04em;margin:0}
+.section-head p{font-size:10px;color:var(--muted);margin:7px 0 0;line-height:1.6}
+.money-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.money-card{background:#fff;border:1px solid #e6e7eb;border-radius:19px;padding:11px;box-shadow:0 5px 22px #aeb2bd14;transition:transform .18s,border-color .18s,box-shadow .18s;min-width:0}
+.money-card.selected{border-color:#858a96;box-shadow:0 0 0 2px #cfd2da55,0 10px 25px #aeb2bd30;transform:translateY(-2px)}
+.money-photo{height:105px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#f1f2f5,#e2e4e9);display:grid;place-items:center;position:relative}
+.money-photo img{width:100%;height:100%;object-fit:contain;display:block}
+.photo-placeholder{text-align:center;color:#858a95;padding:8px}
+.photo-placeholder .note{font-size:8px;letter-spacing:.12em;display:block;margin-top:7px}
+.photo-placeholder .symbol{font-size:27px;display:block;color:#a2a6b0}
+.money-value{font-size:14px;font-weight:800;margin:12px 2px 5px;letter-spacing:-.04em}
+.money-desc{font-size:9px;color:var(--muted);margin:0 2px 12px}
+.select-btn{width:100%;border:1px solid #dfe1e6;background:#f7f7f9;color:#343740;padding:10px 7px;border-radius:10px;font-size:10px;font-weight:800}
+.money-card.selected .select-btn{background:#292b31;color:#fff;border-color:#292b31}
+.add-panel{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:15px;padding:17px 19px;background:linear-gradient(120deg,#fff,#f1f2f5);border:1px solid #fff;border-radius:18px;box-shadow:var(--glow)}
+.selected-label{font-size:9px;color:var(--muted);letter-spacing:.14em}
+.selected-value{font-size:21px;font-weight:800;margin-top:6px}
+.add-actions{display:flex;gap:8px;flex-wrap:wrap}
+.history{margin-top:31px}
+.history-list{display:grid;gap:9px}
+.history-item{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid #e7e8ec;border-radius:14px;padding:13px 15px}
+.history-left{display:flex;align-items:center;gap:11px;min-width:0}
+.history-icon{width:76px;height:46px;border-radius:10px;background:#f0f1f4;display:grid;place-items:center;font-size:17px;flex-shrink:0;overflow:hidden;border:1px solid #e5e6eb}.history-icon img{width:100%;height:100%;object-fit:contain;display:block}.history-icon .history-fallback{font-size:9px;color:#858a95;text-align:center;padding:3px}
+.history-title{font-size:11px;font-weight:800}
+.history-date{font-size:9px;color:var(--muted);margin-top:5px}
+.history-amount{font-size:12px;font-weight:800;white-space:nowrap}
+.remove-one{border:0;background:transparent;color:#999;padding:5px 0 5px 8px;font-size:10px}
+.empty{padding:27px;text-align:center;color:var(--muted);font-size:11px;line-height:1.8;border:1px dashed #d7d9df;border-radius:15px;background:#ffffff80}
+.footer{text-align:center;color:#9699a2;font-size:9px;line-height:1.8;margin-top:30px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,20px);background:#25272d;color:#fff;padding:12px 17px;border-radius:12px;font-size:11px;box-shadow:0 8px 28px #0002;opacity:0;pointer-events:none;transition:.25s;z-index:5;max-width:calc(100% - 30px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:760px){.money-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard{grid-template-columns:1fr}.hero{padding:23px}.money-photo{height:112px}.wrap{padding:17px 13px 35px}.add-panel{align-items:flex-start;flex-direction:column}.add-actions{width:100%}.add-actions .btn{flex:1}}
+@media(min-width:761px) and (max-width:950px){.money-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">◈</div>
+      <div><div class="brand-name">SIM / SAVING</div><div class="brand-sub">INDONESIAN MONEY</div></div>
+    </div>
+    <div class="status">● PERSONAL SAVINGS</div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">YOUR MONEY · YOUR FUTURE</div>
+    <h1>Small steps.<br>Stronger savings.</h1>
+    <p>Catat setiap lembar Rupiah yang kamu tabung. Sedikit demi sedikit, targetmu semakin dekat.</p>
+  </section>
+
+  <section class="dashboard">
+    <div class="panel">
+      <div class="panel-label">Total tabungan saya</div>
+      <div class="total" id="total">Rp0</div>
+      <div class="progress-track"><div class="progress-fill" id="progress"></div></div>
+      <div class="progress-info"><span id="progressText">0% dari target</span><span id="targetLabel">Target belum diatur</span></div>
+      <div class="target-row">
+        <input id="targetInput" type="number" min="0" step="1000" inputmode="numeric" placeholder="Masukkan target (Rp)">
+        <button class="btn secondary" id="saveTarget">Atur target</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-label">Ringkasan tabungan</div>
+      <div class="stats">
+        <div class="stat"><strong id="count">0</strong><span>TRANSAKSI</span></div>
+        <div class="stat"><strong id="remaining">Rp0</strong><span>SISA TARGET</span></div>
+      </div>
+      <p style="font-size:10px;line-height:1.8;color:var(--muted);margin:16px 0 0">Pilih nominal uang di bawah, lalu tambahkan ke tabunganmu.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <div><h2>Pilih nominal Rupiah</h2><p>Tap salah satu uang untuk memilih nominal.</p></div>
+      <span class="eyebrow">01 — 07</span>
+    </div>
+    <div class="add-panel">
+      <div><div class="selected-label">NOMINAL TERPILIH</div><div class="selected-value" id="selectedValue">Belum dipilih</div></div>
+      <div class="add-actions">
+        <button class="btn secondary" id="clearSelection">Batal pilih</button>
+        <button class="btn" id="addMoney">＋ Tambah ke tabungan</button>
+      </div>
+    </div>
+    <div class="money-grid" id="moneyGrid"></div>
+  </section>
+
+  <section class="history">
+    <div class="section-head">
+      <div><h2>Riwayat menabung</h2><p>Semua catatan tersimpan di browser perangkat ini.</p></div>
+      <button class="btn danger" id="clearHistory">Hapus semua</button>
+    </div>
+    <div class="history-list" id="historyList"></div>
+  </section>
+  <footer class="footer">SAVING INDONESIAN MONEY<br>WHITE · SILVER GLOW · MONO EDITION<br><span>Data disimpan secara lokal di browser ini.</span></footer>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const moneyOptions = [
+  {value:1000,label:'Rp1.000',file:'https://ganga--link--ghhzdp9sv8hk.code.run/i/d9fwwxrs'},
+  {value:2000,label:'Rp2.000',file:'https://ganga--link--ghhzdp9sv8hk.code.run/i/y5lhrdkm'},
+  {value:5000,label:'Rp5.000',file:'https://ganga--link--ghhzdp9sv8hk.code.run/i/1d0edba2'},
+  {value:10000,label:'Rp10.000',file:'https://ganga--link--ghhzdp9sv8hk.code.run/i/yatix0aw'},
+  {value:20000,label:'Rp20.000',file:'https://ganga--link--ghhzdp9sv8hk.code.run/i/2ovdk6y2'},
+  {value:50000,label:'Rp50.000',file:'https://ganga--link--ghhzdp9sv8hk.code.run/i/p3s3jnjj'},
+  {value:100000,label:'Rp100.000',file:'https://ganga--link--ghhzdp9sv8hk.code.run/i/cjeqix75'}
+];
+const rupiah = n => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n);
+const safeLoad = (key,fallback) => { try { const x=localStorage.getItem(key); return x===null?fallback:JSON.parse(x); } catch(e){return fallback;} };
+let savings = safeLoad('sim_savings_v1',[]);
+let target = safeLoad('sim_target_v1',0);
+let selected = null;
+const grid = document.getElementById('moneyGrid');
+const historyList = document.getElementById('historyList');
+const toastEl = document.getElementById('toast');
+let toastTimer;
+function toast(message){toastEl.textContent=message;toastEl.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toastEl.classList.remove('show'),2300);}
+function save(){try{localStorage.setItem('sim_savings_v1',JSON.stringify(savings));localStorage.setItem('sim_target_v1',JSON.stringify(target));}catch(e){toast('Browser tidak mengizinkan penyimpanan lokal.');}}
+function renderMoney(){
+  grid.innerHTML='';
+  moneyOptions.forEach(m=>{
+    const card=document.createElement('article');
+    card.className='money-card'+(selected===m.value?' selected':'');
+    const photoMarkup = m.file
+      ? `<img src="${m.file}" alt="Foto uang ${m.label}" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="photo-placeholder" style="display:none"><span class="symbol">▤</span><span class="note">FOTO UANG ${m.label.toUpperCase()}</span><span class="note">LINK FOTO TIDAK TERSEDIA</span></div>`
+      : `<div class="photo-placeholder"><span class="symbol">▤</span><span class="note">FOTO UANG ${m.label.toUpperCase()}</span><span class="note">MENUNGGU FOTO</span></div>`;
+    card.innerHTML=`<div class="money-photo">${photoMarkup}</div><div class="money-value">${m.label}</div><div class="money-desc">Uang Rupiah Indonesia</div><button class="select-btn" type="button">${selected===m.value?'✓ Dipilih':'Pilih nominal'}</button>`;
+    card.querySelector('button').addEventListener('click',()=>{selected=m.value;renderMoney();document.getElementById('selectedValue').textContent=rupiah(selected);});
+    card.addEventListener('dblclick',()=>{selected=m.value;addSavings();});
+    grid.appendChild(card);
+  });
+}
+function renderHistory(){
+  historyList.innerHTML='';
+  if(!savings.length){historyList.innerHTML='<div class="empty">Belum ada tabungan.<br>Pilih nominal uang di atas untuk memulai.</div>';return;}
+  [...savings].reverse().forEach(item=>{
+    const row=document.createElement('div');row.className='history-item';
+    const date=new Date(item.date);
+    const dateText=isNaN(date)?'Tanggal tidak tersedia':date.toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});
+    const money = moneyOptions.find(m=>Number(m.value)===Number(item.value));
+    const imageSrc = money ? money.file : '';
+    const thumb = imageSrc
+      ? `<img src="${imageSrc}" alt="Foto ${item.label}" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="history-fallback" style="display:none">FOTO UANG</span>`
+      : `<span class="history-fallback">FOTO UANG</span>`;
+    row.innerHTML=`<div class="history-left"><div class="history-icon">${thumb}</div><div><div class="history-title">${item.label}</div><div class="history-date">${dateText}</div></div></div><div style="display:flex;align-items:center;gap:8px"><div class="history-amount">+${rupiah(item.value)}</div><button class="remove-one" aria-label="Hapus transaksi">✕</button></div>`;
+    row.querySelector('.remove-one').addEventListener('click',()=>{savings=savings.filter(x=>x.id!==item.id);save();render();toast('Catatan tabungan dihapus.');});
+    historyList.appendChild(row);
+  });
+}
+function render(){
+  const total=savings.reduce((sum,item)=>sum+Number(item.value||0),0);
+  document.getElementById('total').textContent=rupiah(total);
+  document.getElementById('count').textContent=savings.length;
+  const percent=target>0?Math.min(100,Math.round(total/target*100)):0;
+  document.getElementById('progress').style.width=percent+'%';
+  document.getElementById('progressText').textContent=target>0?percent+'% dari target':'Atur target untuk melihat progres';
+  document.getElementById('targetLabel').textContent=target>0?rupiah(target):'Target belum diatur';
+  document.getElementById('remaining').textContent=target>0?rupiah(Math.max(0,target-total)): '—';
+  document.getElementById('targetInput').value=target||'';
+  renderMoney();renderHistory();
+  document.getElementById('selectedValue').textContent=selected?rupiah(selected):'Belum dipilih';
+}
+function addSavings(){
+  if(!selected){toast('Pilih nominal uang terlebih dahulu.');return;}
+  const item=moneyOptions.find(m=>m.value===selected);
+  savings.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),value:item.value,label:item.label,date:new Date().toISOString()});
+  save();render();toast(item.label+' berhasil ditambahkan ke tabungan.');
+}
+document.getElementById('addMoney').addEventListener('click',addSavings);
+document.getElementById('clearSelection').addEventListener('click',()=>{selected=null;renderMoney();document.getElementById('selectedValue').textContent='Belum dipilih';});
+document.getElementById('saveTarget').addEventListener('click',()=>{
+  const value=Math.floor(Number(document.getElementById('targetInput').value));
+  if(!Number.isFinite(value)||value<0){toast('Masukkan target yang valid.');return;}
+  target=value;save();render();toast(target>0?'Target tabungan disimpan.':'Target tabungan dihapus.');
+});
+document.getElementById('clearHistory').addEventListener('click',()=>{
+  if(!savings.length){toast('Riwayat masih kosong.');return;}
+  if(confirm('Hapus semua riwayat tabungan? Tindakan ini tidak dapat dibatalkan.')){savings=[];save();render();toast('Semua riwayat dihapus.');}
+});
+render();
+</script>
+</body>
+</html>
