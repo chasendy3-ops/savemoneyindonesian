@@ -36,6 +36,7 @@ button{cursor:pointer;touch-action:manipulation}
 .target-row input:focus{border-color:#a6aab4;box-shadow:0 0 0 3px #d9dbe344}
 .btn{border:0;border-radius:11px;padding:11px 14px;background:#25272d;color:white;font-size:11px;font-weight:700;transition:transform .15s}
 .btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .btn.secondary{background:#f0f1f4;color:#373a42;border:1px solid #e0e2e8}
 .btn.danger{background:#fff;color:#777;border:1px solid var(--line)}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:17px}
@@ -213,7 +214,7 @@ button{cursor:pointer;touch-action:manipulation}
     <div class="history-list" id="historyList"></div>
   </section>
 
-  <!-- MONEY SAVING ID (Fitur penarikan tabungan + struk) -->
+  <!-- MONEY SAVING ID -->
   <section class="withdraw-section">
     <div class="section-head"><div><h2>Ambil uang tabungan</h2><p>Isi nominal dan tujuan penggunaan uang. Jumlah penarikan tidak boleh melebihi saldo tabungan.</p></div><span class="eyebrow">WITHDRAW</span></div>
     <div class="withdraw-card">
@@ -394,7 +395,7 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   window.location.replace('login.html');
 });
 
-/* ===== SALDO TABUNGAN (net: deposit - withdraw) ===== */
+/* ===== SALDO TABUNGAN (net) ===== */
 function getBalance(){
   return savings.reduce((sum,item)=>sum+(item.type==='withdraw'?-1:1)*Number(item.value||0),0);
 }
@@ -421,7 +422,11 @@ function renderMoney(){
       ? `<img src="${m.file}" alt="${m.label}" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="photo-placeholder" style="display:none"><span class="symbol">▤</span><span class="note">FOTO UANG</span></div>`
       : `<div class="photo-placeholder"><span class="symbol">▤</span><span class="note">FOTO UANG</span></div>`;
     card.innerHTML=`<div class="money-photo">${photoMarkup}</div><div class="money-value">${m.label}</div><div class="money-desc">Uang Rupiah Indonesia</div><button class="select-btn" type="button">${selected===m.value?'✓ Dipilih':'Pilih nominal'}</button>`;
-    card.querySelector('button').addEventListener('click',()=>{selected=m.value;renderMoney();document.getElementById('selectedValue').textContent=rupiah(selected);});
+    card.querySelector('button').addEventListener('click',()=>{
+      selected=m.value;
+      renderMoney();
+      document.getElementById('selectedValue').textContent=rupiah(selected);
+    });
     card.addEventListener('dblclick',()=>{selected=m.value;addSavings();});
     grid.appendChild(card);
   });
@@ -469,17 +474,52 @@ function updateWithdrawBalance(){
   if(el) el.textContent='Saldo tersedia: '+rupiah(Math.max(0,getBalance()));
 }
 
-/* ===== ACTIONS TABUNGAN ===== */
-document.getElementById('addMoney').addEventListener('click',addSavings);
-document.getElementById('clearSelection').addEventListener('click',()=>{selected=null;renderMoney();document.getElementById('selectedValue').textContent='Belum dipilih';});
+/* ===== PERBAIKAN: Tambah ke Tabungan ===== */
+document.getElementById('addMoney').addEventListener('click', addSavings);
 
 async function addSavings(){
-  if(!selected){toast('Pilih nominal uang dulu.');return;}
-  if(!currentUser) return;
-  const item=moneyOptions.find(m=>m.value===selected);
-  await set(push(ref(db, `users/${currentUser.uid}/savings`)), { value: item.value, label: item.label, date: new Date().toISOString() });
-  toast(item.label+' ditambahkan.');
+  if(!selected){
+    showPopup('warning', 'Belum Memilih', 'Pilih nominal uang terlebih dahulu dengan menekan salah satu kartu uang.');
+    return;
+  }
+  if(!currentUser){
+    showPopup('error', 'Sesi Habis', 'Silakan login ulang.');
+    return;
+  }
+
+  const item = moneyOptions.find(m => m.value === selected);
+  if(!item){
+    showPopup('error', 'Nominal Tidak Dikenal', 'Nominal uang tidak valid. Silakan pilih ulang.');
+    return;
+  }
+
+  const btn = document.getElementById('addMoney');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Menyimpan...';
+
+  try {
+    await push(ref(db, `users/${currentUser.uid}/savings`), {
+      value: item.value,
+      label: item.label,
+      date: new Date().toISOString()
+    });
+
+    selected = null;
+    document.getElementById('selectedValue').textContent = 'Belum dipilih';
+    renderMoney();
+
+    showPopup('success', 'Berhasil Ditambahkan', `${item.label} berhasil masuk ke tabungan Anda.`);
+  } catch (err) {
+    console.error('Gagal menambah tabungan:', err);
+    showPopup('error', 'Gagal Menyimpan', 'Terjadi kesalahan: ' + (err.message || 'Coba lagi.'));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
 }
+
+document.getElementById('clearSelection').addEventListener('click',()=>{selected=null;renderMoney();document.getElementById('selectedValue').textContent='Belum dipilih';});
 
 document.getElementById('saveTarget').addEventListener('click',async ()=>{
   if(!currentUser) return;
@@ -526,23 +566,42 @@ document.getElementById('makeReceipt').addEventListener('click',()=>{
   document.getElementById('receiptWrap').scrollIntoView({behavior:'smooth',block:'start'});
 });
 
-document.getElementById('confirmWithdraw').addEventListener('click',async ()=>{
-  if(!pendingWithdrawal){toast('Buat detail transaksi terlebih dahulu.');return;}
+document.getElementById('confirmWithdraw').addEventListener('click', async () => {
+  if(!pendingWithdrawal){ toast('Buat detail transaksi terlebih dahulu.'); return; }
   if(!currentUser) return;
-  if(pendingWithdrawal.value>getBalance()){toast('Saldo berubah dan tidak mencukupi. Buat ulang detail transaksi.');return;}
-  await set(push(ref(db, `users/${currentUser.uid}/savings`)), {
-    value: pendingWithdrawal.value,
-    label: pendingWithdrawal.label,
-    type: 'withdraw',
-    purpose: pendingWithdrawal.purpose,
-    date: pendingWithdrawal.date,
-    trx: pendingWithdrawal.trx
-  });
-  document.getElementById('receiptWrap').style.display='none';
-  document.getElementById('withdrawAmount').value='';
-  document.getElementById('withdrawPurpose').value='';
-  pendingWithdrawal=null;
-  toast('Penarikan dicatat dan saldo telah dikurangi.');
+  if(pendingWithdrawal.value > getBalance()){
+    toast('Saldo berubah dan tidak mencukupi. Buat ulang detail transaksi.');
+    return;
+  }
+
+  const btn = document.getElementById('confirmWithdraw');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Memproses...';
+
+  try {
+    await push(ref(db, `users/${currentUser.uid}/savings`), {
+      value: pendingWithdrawal.value,
+      label: pendingWithdrawal.label,
+      type: 'withdraw',
+      purpose: pendingWithdrawal.purpose,
+      date: pendingWithdrawal.date,
+      trx: pendingWithdrawal.trx
+    });
+
+    document.getElementById('receiptWrap').style.display = 'none';
+    document.getElementById('withdrawAmount').value = '';
+    document.getElementById('withdrawPurpose').value = '';
+    pendingWithdrawal = null;
+
+    showPopup('success', 'Penarikan Dicatat', 'Saldo tabungan telah dikurangi.');
+  } catch (err) {
+    console.error('Gagal mencatat penarikan:', err);
+    showPopup('error', 'Gagal Menyimpan', err.message || 'Coba lagi.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
 });
 
 document.getElementById('downloadReceipt').addEventListener('click',()=>{
@@ -590,12 +649,9 @@ function calcUpdate(){
 }
 
 function calcSafeEval(expr){
-  // Hanya izinkan angka, + - * / % . dan spasi
   if(!/^[0-9+\-*/%.()\s]+$/.test(expr)) return NaN;
   try{
-    // Ganti % menjadi /100 untuk perilaku persen sederhana
     let e = expr.replace(/%/g,'/100');
-    // eslint-disable-next-line no-new-func
     const result = Function('"use strict";return ('+e+')')();
     return Number(result);
   }catch(e){return NaN;}
@@ -622,10 +678,8 @@ document.querySelectorAll('[data-calc]').forEach(btn=>{
       }
       return;
     }
-    // Operator/angka/desimal
     if(calcJustEvaluated && /[0-9.]/.test(v)){ calcExpr=''; }
     calcJustEvaluated=false;
-    // Cegah operator berulang
     const ops = ['+','-','*','/','%'];
     const last = calcExpr.slice(-1);
     if(ops.includes(v) && ops.includes(last) && calcExpr.length>0){
