@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#f8f8fa">
+<title>Login · Saving Indonesian Money</title>
+<style>
+:root{--ink:#202126;--muted:#777b84;--line:#e2e3e8;--paper:#fff;--soft:#f5f6f8;--glow:0 8px 30px rgba(125,130,145,.14)}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 50% 0%,#fff 0,#f8f8fa 58%,#f0f1f4 100%);color:var(--ink);font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+button,input{font:inherit}
+button{cursor:pointer;touch-action:manipulation}
+.logo{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#fff,#e4e6eb);border:1px solid #fff;box-shadow:0 4px 18px #c5c8d344;font-size:26px;margin-bottom:15px}
+.auth-box{background:#fff;border-radius:24px;padding:30px;width:min(400px,100%);box-shadow:0 20px 60px rgba(0,0,0,.1);border:1px solid #fff}
+.auth-box h2{font-size:20px;margin:0 0 10px;letter-spacing:-.03em}
+.auth-box p{font-size:11px;color:var(--muted);margin:0 0 20px;line-height:1.6}
+.auth-box input{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px;background:#fafafa;margin-bottom:10px;font-size:12px;outline:none;transition:border-color .2s}
+.auth-box input:focus{border-color:#a6aab4;box-shadow:0 0 0 3px #d9dbe344}
+.auth-box input.invalid{border-color:#e57373;background:#fff5f5}
+.auth-box input.valid{border-color:#81c784;background:#f5fff5}
+.btn{border:0;border-radius:11px;padding:12px 14px;background:#25272d;color:#fff;font-size:12px;font-weight:700;width:100%;transition:transform .15s,opacity .15s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn-google{background:#fff;color:var(--ink);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:8px;margin-top:0}
+.auth-divider{text-align:center;font-size:10px;color:var(--muted);margin:15px 0;position:relative}
+.auth-divider:before,.auth-divider:after{content:"";position:absolute;top:50%;width:40%;height:1px;background:var(--line)}
+.auth-divider:before{left:0}.auth-divider:after{right:0}
+.auth-toggle{text-align:center;font-size:11px;margin-top:15px;color:var(--muted)}
+.auth-toggle span{color:var(--ink);font-weight:700;cursor:pointer;text-decoration:underline}
+.field-hint{font-size:10px;color:var(--muted);margin:-4px 0 10px;padding-left:4px;min-height:14px}
+.field-hint.error{color:#c62828}
+.field-hint.ok{color:#2e7d32}
+.hidden{display:none!important}
+
+/* ===== POPUP NOTIFIKASI ===== */
+#popupOverlay{position:fixed;inset:0;background:rgba(20,20,25,.5);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+#popupOverlay.show{opacity:1;pointer-events:auto}
+.popup{background:#fff;border-radius:20px;padding:28px 24px;width:min(360px,100%);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25);transform:scale(.9);transition:transform .25s}
+#popupOverlay.show .popup{transform:scale(1)}
+.popup-icon{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-size:32px;margin:0 auto 16px;font-weight:900}
+.popup-icon.success{background:#e8f5e9;color:#2e7d32}
+.popup-icon.error{background:#ffebee;color:#c62828}
+.popup-icon.warning{background:#fff8e1;color:#f57c00}
+.popup-icon.info{background:#e3f2fd;color:#1565c0}
+.popup-title{font-size:16px;font-weight:800;margin:0 0 8px;letter-spacing:-.02em}
+.popup-message{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 20px}
+.popup .btn{width:100%}
+</style>
+</head>
+<body>
+
+<div class="auth-box">
+  <div class="logo">◈</div>
+  <h2 id="authTitle">Masuk ke Akun</h2>
+  <p id="authDesc">Masukkan email & password atau Google.</p>
+
+  <!-- Username hanya saat daftar -->
+  <div id="usernameField" class="hidden">
+    <input id="regUsername" type="text" placeholder="Username (untuk sapaan)" autocomplete="username">
+    <div class="field-hint" id="hintUsername"></div>
+  </div>
+
+  <input id="authEmail" type="email" placeholder="Email" autocomplete="email">
+  <div class="field-hint" id="hintEmail"></div>
+
+  <input id="authPassword" type="password" placeholder="Password" autocomplete="current-password">
+  <div class="field-hint" id="hintPassword"></div>
+
+  <button class="btn" id="authSubmit">Masuk</button>
+
+  <div class="auth-divider">atau</div>
+
+  <button class="btn btn-google" id="googleLoginBtn">
+    <svg width="16" height="16" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+    Masuk dengan Google
+  </button>
+
+  <div class="auth-toggle">
+    <span id="toggleAuthMode">Belum punya akun? Daftar</span>
+  </div>
+</div>
+
+<!-- POPUP -->
+<div id="popupOverlay">
+  <div class="popup">
+    <div class="popup-icon" id="popupIcon">✓</div>
+    <h3 class="popup-title" id="popupTitle">Judul</h3>
+    <p class="popup-message" id="popupMessage">Pesan</p>
+    <button class="btn" id="popupClose">Mengerti</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* ===== KONFIGURASI FIREBASE ===== */
+const firebaseConfig = {
+  apiKey: "AIzaSyDvtfOD8TEPMzxYxaEQqvbV-QORyEgRHQc",
+ // GANTI
+  authDomain: "savingmoney1.firebaseapp.com", // GANTI
+  databaseURL: "https://project-anda-default-rtdb.asia-southeast1.firebasedatabase.app", // GANTI
+  projectId: "savingmoney1", // GANTI
+  storageBucket: "savingmoney1.firebasestorage.app", // GANTI
+  messagingSenderId: "1012330501061", // GANTI
+  appId: "1:1012330501061:web:e027987e32e6d0a88771ac" // GANTI
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+/* ===== POPUP SYSTEM ===== */
+const overlay = document.getElementById('popupOverlay');
+const popupIcon = document.getElementById('popupIcon');
+const popupTitle = document.getElementById('popupTitle');
+const popupMessage = document.getElementById('popupMessage');
+const popupClose = document.getElementById('popupClose');
+const ICONS = { success:'✓', error:'✕', warning:'!', info:'i' };
+
+let popupCallback = null;
+function showPopup(type, title, message, onClose) {
+  popupIcon.className = 'popup-icon ' + type;
+  popupIcon.textContent = ICONS[type] || 'i';
+  popupTitle.textContent = title;
+  popupMessage.textContent = message;
+  popupCallback = onClose || null;
+  overlay.classList.add('show');
+}
+function closePopup() {
+  overlay.classList.remove('show');
+  const cb = popupCallback; popupCallback = null;
+  if (cb) setTimeout(cb, 100);
+}
+popupClose.addEventListener('click', closePopup);
+overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(); });
+
+/* ===== UI STATE ===== */
+const authTitle = document.getElementById('authTitle');
+const authDesc = document.getElementById('authDesc');
+const authEmail = document.getElementById('authEmail');
+const authPassword = document.getElementById('authPassword');
+const regUsername = document.getElementById('regUsername');
+const usernameField = document.getElementById('usernameField');
+const authSubmit = document.getElementById('authSubmit');
+const toggleAuthMode = document.getElementById('toggleAuthMode');
+const hintUsername = document.getElementById('hintUsername');
+const hintEmail = document.getElementById('hintEmail');
+const hintPassword = document.getElementById('hintPassword');
+let isRegisterMode = false;
+
+function clearHints() {
+  [hintUsername, hintEmail, hintPassword].forEach(h => { h.textContent=''; h.className='field-hint'; });
+  [regUsername, authEmail, authPassword].forEach(i => i.classList.remove('invalid','valid'));
+}
+function setHint(el, input, text, type) {
+  el.textContent = text;
+  el.className = 'field-hint ' + type;
+  input.classList.remove('invalid','valid');
+  if (type === 'error') input.classList.add('invalid');
+  if (type === 'ok') input.classList.add('valid');
+}
+
+toggleAuthMode.addEventListener('click', () => {
+  isRegisterMode = !isRegisterMode;
+  authTitle.textContent = isRegisterMode ? 'Daftar Akun Baru' : 'Masuk ke Akun';
+  authDesc.textContent = isRegisterMode ? 'Buat username, email, & password.' : 'Masukkan email & password atau Google.';
+  authSubmit.textContent = isRegisterMode ? 'Daftar' : 'Masuk';
+  toggleAuthMode.textContent = isRegisterMode ? 'Sudah punya akun? Masuk' : 'Belum punya akun? Daftar';
+  usernameField.classList.toggle('hidden', !isRegisterMode);
+  clearHints();
+});
+
+/* ===== VALIDASI REAL-TIME ===== */
+regUsername.addEventListener('input', () => {
+  const v = regUsername.value.trim();
+  if (!v) { setHint(hintUsername, regUsername, 'Username wajib diisi', 'error'); return; }
+  if (v.length < 3) { setHint(hintUsername, regUsername, 'Username minimal 3 karakter', 'error'); return; }
+  setHint(hintUsername, regUsername, '✓ Username tersedia', 'ok');
+});
+
+authEmail.addEventListener('input', () => {
+  const v = authEmail.value.trim();
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!v) { setHint(hintEmail, authEmail, 'Email wajib diisi', 'error'); return; }
+  if (!re.test(v)) { setHint(hintEmail, authEmail, 'Format email tidak valid', 'error'); return; }
+  setHint(hintEmail, authEmail, '✓ Format email valid', 'ok');
+});
+
+authPassword.addEventListener('input', () => {
+  const v = authPassword.value;
+  if (!v) { setHint(hintPassword, authPassword, 'Sandi wajib diisi', 'error'); return; }
+  if (v.length < 6) { setHint(hintPassword, authPassword, 'Sandi minimal 6 digit', 'error'); return; }
+  setHint(hintPassword, authPassword, '✓ Sandi memenuhi syarat', 'ok');
+});
+
+/* ===== SUBMIT ===== */
+authSubmit.addEventListener('click', async () => {
+  clearHints();
+  const email = authEmail.value.trim();
+  const password = authPassword.value;
+  const username = regUsername.value.trim();
+
+  // Validasi
+  let valid = true;
+  if (isRegisterMode && username.length < 3) {
+    setHint(hintUsername, regUsername, 'Username minimal 3 karakter', 'error');
+    valid = false;
+  }
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!re.test(email)) {
+    setHint(hintEmail, authEmail, 'Email salah / tidak valid', 'error');
+    valid = false;
+  }
+  if (password.length < 6) {
+    setHint(hintPassword, authPassword, 'Sandi minimal 6 digit', 'error');
+    valid = false;
+  }
+  if (!valid) {
+    showPopup('warning', 'Periksa Input', 'Ada kolom yang belum benar. Silakan periksa kembali.');
+    return;
+  }
+
+  // Disable tombol
+  authSubmit.disabled = true;
+  authSubmit.textContent = isRegisterMode ? 'Mendaftar...' : 'Masuk...';
+
+  try {
+    await setPersistence(auth, browserLocalPersistence); // tetap login saat refresh
+
+    if (isRegisterMode) {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(cred.user, { displayName: username });
+      await set(ref(db, `users/${cred.user.uid}/profile/username`), username);
+      showPopup('success', 'Akun Terdaftar!', `Selamat datang, ${username}. Akun berhasil dibuat.`, () => {
+        window.location.href = 'index.html';
+      });
+    } else {
+      await signInWithEmailAndPassword(auth, email, password);
+      showPopup('success', 'Login Berhasil', 'Mengalihkan ke dashboard...', () => {
+        window.location.href = 'index.html';
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    handleAuthError(err);
+  } finally {
+    authSubmit.disabled = false;
+    authSubmit.textContent = isRegisterMode ? 'Daftar' : 'Masuk';
+  }
+});
+
+function handleAuthError(err) {
+  const c = err.code || '';
+  if (c === 'auth/user-not-found') {
+    showPopup('error', 'Email Salah', 'Email belum terdaftar. Silakan daftar terlebih dahulu.');
+  } else if (c === 'auth/wrong-password') {
+    showPopup('error', 'Sandi Salah', 'Password yang Anda masukkan salah.');
+  } else if (c === 'auth/invalid-credential') {
+    showPopup('error', 'Email / Sandi Salah', 'Email atau password salah. Periksa kembali.');
+  } else if (c === 'auth/invalid-email') {
+    showPopup('error', 'Email Salah', 'Format email tidak valid.');
+  } else if (c === 'auth/email-already-in-use') {
+    showPopup('error', 'Email Terdaftar', 'Email ini sudah dipakai. Coba masuk atau gunakan email lain.');
+  } else if (c === 'auth/weak-password') {
+    showPopup('error', 'Sandi Lemah', 'Sandi minimal 6 digit.');
+  } else if (c === 'auth/too-many-requests') {
+    showPopup('warning', 'Terlalu Banyak Percobaan', 'Coba lagi beberapa menit lagi.');
+  } else if (c === 'auth/network-request-failed') {
+    showPopup('error', 'Koneksi Bermasalah', 'Periksa koneksi internet Anda.');
+  } else {
+    showPopup('error', 'Gagal Login', err.message || 'Terjadi kesalahan tak terduga.');
+  }
+}
+
+/* ===== GOOGLE LOGIN ===== */
+document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+  const btn = document.getElementById('googleLoginBtn');
+  btn.disabled = true;
+  btn.textContent = 'Menghubungkan...';
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+    const result = await signInWithPopup(auth, provider);
+    const uname = result.user.displayName || result.user.email.split('@')[0];
+    await set(ref(db, `users/${result.user.uid}/profile/username`), uname);
+    showPopup('success', 'Login Google Berhasil', `Selamat datang, ${uname}!`, () => {
+      window.location.href = 'index.html';
+    });
+  } catch (err) {
+    console.error(err);
+    const c = err.code || '';
+    if (c === 'auth/popup-closed-by-user') {
+      showPopup('warning', 'Dibatalkan', 'Popup login ditutup. Coba lagi.');
+    } else if (c === 'auth/popup-blocked') {
+      showPopup('error', 'Popup Diblokir', 'Izinkan popup untuk situs ini, lalu coba lagi.');
+    } else if (c === 'auth/unauthorized-domain') {
+      showPopup('error', 'Login Google Bermasalah', 'Domain belum diizinkan di Firebase Console.');
+    } else if (c === 'auth/account-exists-with-different-credential') {
+      showPopup('warning', 'Akun Sudah Ada', 'Email ini sudah terdaftar dengan metode lain. Masuk dengan email/password.');
+    } else if (c === 'auth/cancelled-popup-request') {
+      showPopup('warning', 'Dibatalkan', 'Permintaan login dibatalkan.');
+    } else {
+      showPopup('error', 'Login Google Bermasalah', err.message || 'Gagal login dengan Google.');
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Masuk dengan Google';
+  }
+});
+
+/* ===== AUTO REDIRECT JIKA SUDAH LOGIN ===== */
+onAuthStateChanged(auth, (user) => {
+  if (user) window.location.href = 'index.html';
+});
+</script>
+</body>
+</html>
