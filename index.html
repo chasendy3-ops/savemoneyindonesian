@@ -4,9 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#f8f8fa">
-<title>Saving Indonesian Money · Real</title>
+<title>Saving Indonesian Money</title>
 <style>
-/* --- STYLE (Sama seperti sebelumnya, dengan sedikit penyesuaian untuk QR) --- */
 :root{--ink:#202126;--muted:#777b84;--line:#e2e3e8;--silver:#c8cbd3;--paper:#fff;--soft:#f5f6f8;--glow:0 8px 30px rgba(125,130,145,.14)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -86,13 +85,12 @@ button{cursor:pointer;touch-action:manipulation}
 .wallet-log{display:grid;gap:8px;margin-top:14px}
 .wallet-log-item{display:flex;justify-content:space-between;gap:10px;padding:11px;border:1px solid var(--line);border-radius:11px;font-size:10px;background:#fafafa}
 .qris-box{background:#fff;border:2px dashed var(--line);border-radius:16px;padding:15px;text-align:center;margin:10px 0}
-.qris-box img{max-width:100%;height:auto;border-radius:8px}
 .dana-instruction{background:#e8f4fd;border:1px solid #b6dcf5;border-radius:12px;padding:14px;margin:10px 0;font-size:11px;line-height:1.7}
 .dana-instruction strong{color:#0b5e9e;font-size:14px}
 @media(max-width:760px){.money-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard{grid-template-columns:1fr}.hero{padding:23px}.money-photo{height:112px}.wrap{padding:17px 13px 35px}.add-panel{align-items:flex-start;flex-direction:column}.add-actions{width:100%}.add-actions .btn{flex:1}.wallet-grid{grid-template-columns:1fr}}
 @media(min-width:761px) and (max-width:950px){.money-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
-/* LOGIN OVERLAY */
+/* AUTH */
 #authScreen{position:fixed;inset:0;background:rgba(248,248,250,.96);backdrop-filter:blur(8px);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
 .auth-box{background:#fff;border-radius:24px;padding:30px;width:min(400px,100%);box-shadow:0 20px 60px rgba(0,0,0,.1);border:1px solid #fff}
 .auth-box h2{font-size:20px;margin:0 0 10px;letter-spacing:-.03em}
@@ -112,19 +110,19 @@ button{cursor:pointer;touch-action:manipulation}
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
+<!-- AUTH SCREEN -->
 <div id="authScreen">
   <div class="auth-box">
     <div class="logo" style="margin-bottom:15px;width:50px;height:50px;font-size:26px">◈</div>
     <h2 id="authTitle">Masuk ke Akun</h2>
-    <p id="authDesc">Gunakan username & password atau Google.</p>
+    <p id="authDesc">Gunakan email & password atau Google.</p>
     
-    <!-- Field Email hanya muncul saat mode Daftar -->
-    <div id="emailField" class="hidden">
-        <input id="authEmail" type="email" placeholder="Email (untuk verifikasi)" autocomplete="email">
+    <!-- Field Username (hanya daftar) -->
+    <div id="usernameField" class="hidden">
+        <input id="regUsername" type="text" placeholder="Username (untuk sapaan)" autocomplete="username">
     </div>
     
-    <input id="authUsername" type="text" placeholder="Username" autocomplete="username">
+    <input id="authEmail" type="email" placeholder="Email" autocomplete="email">
     <input id="authPassword" type="password" placeholder="Password" autocomplete="current-password">
     <button class="btn" id="authSubmit">Masuk</button>
     <div class="auth-divider">atau</div>
@@ -151,9 +149,8 @@ button{cursor:pointer;touch-action:manipulation}
     </div>
   </header>
 
-  <!-- SAPAAN -->
   <div style="margin-bottom:20px">
-    <h2 style="font-size:24px;letter-spacing:-.04em;margin:0 0 5px" id="greetingText">HAI, USERNAME!</h2>
+    <h2 style="font-size:24px;letter-spacing:-.04em;margin:0 0 5px" id="greetingText">HAI, USER!</h2>
     <p style="font-size:11px;color:var(--muted);margin:0">Terus semangat menabung, masa depan cerah menantimu.</p>
   </div>
 
@@ -213,18 +210,16 @@ button{cursor:pointer;touch-action:manipulation}
           <label for="depositMethod">METODE SIMPAN UANG</label>
           <select id="depositMethod"><option value="DANA">DANA</option><option value="QRIS">QRIS</option></select>
           
-          <!-- Instruksi DANA -->
           <div id="danaInstruction" class="dana-instruction hidden">
             <div>Silakan transfer ke DANA:</div>
             <strong>085715913912</strong>
             <div style="margin-top:5px;font-size:10px">Setelah transfer, klik tombol di bawah untuk mencatat setoran.</div>
           </div>
 
-          <!-- Kotak QRIS -->
           <div id="qrisContainer" class="qris-box hidden">
              <div style="font-size:10px;margin-bottom:8px;color:var(--muted)">Scan QRIS ini untuk membayar</div>
              <div id="qrisImageArea"></div>
-             <div style="font-size:9px;margin-top:8px;color:var(--muted)">Nominal sudah terisi otomatis. Setelah bayar, klik tombol simpan.</div>
+             <div style="font-size:9px;margin-top:8px;color:var(--muted)">Nominal sudah terisi otomatis.</div>
           </div>
 
           <button class="btn" id="depositBtn" type="button">＋ Simpan Uang</button>
@@ -251,7 +246,7 @@ button{cursor:pointer;touch-action:manipulation}
       </div>
     </div>
     <div class="wallet-card" style="margin-top:12px">
-      <div class="section-head"><div><h2>Riwayat Dompet</h2><p>Setoran dan permintaan withdraw pada perangkat ini.</p></div></div>
+      <div class="section-head"><div><h2>Riwayat Dompet</h2><p>Setoran dan permintaan withdraw.</p></div></div>
       <div id="walletHistory" class="wallet-log"><div class="empty">Belum ada transaksi dompet.</div></div>
     </div>
   </section>
@@ -290,10 +285,9 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 
 /* ============================================================
-   🔥 STRING QRIS STATIS ANDA — WAJIB DIISI UNTUK FITUR QRIS
+   STRING QRIS STATIS (GANTI DENGAN MILIK ANDA)
    ============================================================ */
-// Ganti dengan string QRIS statis milik Anda (scan QRIS Anda untuk mendapatkan string ini)
-const STATIC_QRIS_STRING = "00020101021126670016COM.NOBUBANK.WWW01189360050300000879140214107456374359710303UMI51440014ID.CO.QRIS.WWW0215ID20232494105490303UMI5204511153033605802ID5912YANAMIKUBOTZ6005TEGAL61055211162070703A016304F0A6"; // CONTOH - GANTI!
+const STATIC_QRIS_STRING = "00020101021126670016COM.NOBUBANK.WWW01189360050300000879140214107456374359710303UMI51440014ID.CO.QRIS.WWW0215ID20232494105490303UMI5204511153033605802ID5912YANAMIKUBOTZ6005TEGAL61055211162070703A016304F0A6"; // GANTI!
 
 /* ============================================================
    STATE
@@ -320,125 +314,81 @@ const authScreen = document.getElementById('authScreen');
 const mainApp = document.getElementById('mainApp');
 const authTitle = document.getElementById('authTitle');
 const authDesc = document.getElementById('authDesc');
-const authUsername = document.getElementById('authUsername');
 const authEmail = document.getElementById('authEmail');
 const authPassword = document.getElementById('authPassword');
+const regUsername = document.getElementById('regUsername');
+const usernameField = document.getElementById('usernameField');
 const authSubmit = document.getElementById('authSubmit');
 const toggleAuthMode = document.getElementById('toggleAuthMode');
-const emailField = document.getElementById('emailField');
 let isRegisterMode = false;
 
 toggleAuthMode.addEventListener('click', () => {
   isRegisterMode = !isRegisterMode;
   authTitle.textContent = isRegisterMode ? 'Daftar Akun Baru' : 'Masuk ke Akun';
-  authDesc.textContent = isRegisterMode ? 'Buat username, email, & password.' : 'Gunakan username & password atau Google.';
+  authDesc.textContent = isRegisterMode ? 'Buat username, email, & password.' : 'Masukkan email & password atau Google.';
   authSubmit.textContent = isRegisterMode ? 'Daftar' : 'Masuk';
   toggleAuthMode.textContent = isRegisterMode ? 'Sudah punya akun? Masuk' : 'Belum punya akun? Daftar';
-  if(isRegisterMode) emailField.classList.remove('hidden'); else emailField.classList.add('hidden');
+  if(isRegisterMode) usernameField.classList.remove('hidden');
+  else usernameField.classList.add('hidden');
 });
 
 authSubmit.addEventListener('click', async () => {
-  const username = authUsername.value.trim();
-  const password = authPassword.value.trim();
   const email = authEmail.value.trim();
+  const password = authPassword.value.trim();
+  const username = regUsername.value.trim();
   
-  if (!username || !password) { toast('Isi username dan password.'); return; }
-  if (isRegisterMode && !email) { toast('Isi email untuk pendaftaran.'); return; }
-  if (username.length < 3) { toast('Username minimal 3 karakter.'); return; }
+  if (!email || !password) { toast('Isi email dan password.'); return; }
   if (password.length < 6) { toast('Password minimal 6 karakter.'); return; }
 
   try {
     if (isRegisterMode) {
-      // Daftar dengan Email Asli
+      if (!username) { toast('Isi username untuk sapaan.'); return; }
+      if (username.length < 3) { toast('Username minimal 3 karakter.'); return; }
+      
+      // Daftar dengan email asli
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       // Simpan username ke displayName
       await updateProfile(userCredential.user, { displayName: username });
-      // Simpan username ke database juga
+      // Simpan username ke database
       await set(ref(db, `users/${userCredential.user.uid}/profile/username`), username);
       toast('Akun berhasil dibuat!');
+      // onAuthStateChanged akan otomatis redirect
     } else {
-      // LOGIN: Cari email berdasarkan username di database
-      // Karena Firebase butuh email untuk login, kita harus mencari email user berdasarkan username
-      // Untuk simplifikasi di client-side, kita query database. (Untuk produksi, ini harus di server/Cloud Function)
-      
-      // Kita akan menggunakan pendekatan: Login dengan email semu (username@sim.saving) JIKA user terdaftar dengan cara lama.
-      // TAPI karena sekarang kita minta email saat daftar, kita perlu mencari email asli.
-      
-      // Solusi Sementara: Kita simpan mapping username -> email di node terpisah saat registrasi.
-      // Tapi karena kita tidak bisa query realtime DB berdasarkan value dengan mudah di client SDK,
-      // Kita akan coba login dengan email semu DULU (username@sim.saving), jika gagal, berarti user baru pakai email asli.
-      
-      // --- PERBAIKAN: Kita gunakan email semu untuk login username/password agar KONSISTEN ---
-      // Saat daftar, kita simpan email asli di database, tapi auth tetap pakai email semu? Tidak bisa.
-      
-      // --- SOLUSI FINAL ---
-      // Karena user ingin login dengan username, kita akan buat email virtual dari username.
-      // Saat daftar, kita TETAP buat auth dengan email virtual, tapi kita SIMPAN email asli di database untuk keperluan lain.
-      // Ini adalah kompromi terbaik untuk client-side only tanpa Cloud Functions.
-      
-      // Mari kita ubah: Saat daftar, kita pakai email virtual. Email asli hanya disimpan di database.
-      // Jadi login = username + password -> email virtual.
-      
-      // Kode di atas (registrasi) saya ubah agar menggunakan email virtual:
-      // (Lihat blok registrasi yang sudah diperbaiki di bawah)
-      
-      toast('Fitur login sedang disesuaikan. Gunakan email virtual.');
+      // LOGIN DENGAN EMAIL & PASSWORD
+      await signInWithEmailAndPassword(auth, email, password);
+      // onAuthStateChanged akan otomatis redirect
     }
   } catch (error) {
     console.error(error);
-    toast('Gagal: ' + error.message);
+    if (error.code === 'auth/email-already-in-use') toast('Email sudah terdaftar.');
+    else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') toast('Email atau password salah.');
+    else if (error.code === 'auth/invalid-email') toast('Format email tidak valid.');
+    else toast('Error: ' + error.message);
   }
 });
-
-// Perbaikan Logika Auth (Final)
-// Kita gunakan email virtual untuk Auth agar username/password bisa dipakai.
-// Email asli hanya disimpan sebagai data profil.
-const emailDomain = "@sim.saving";
-authSubmit.onclick = async () => {
-    const username = authUsername.value.trim();
-    const password = authPassword.value.trim();
-    const emailAsli = authEmail.value.trim();
-    
-    if (!username || !password) { toast('Isi username dan password.'); return; }
-    
-    const emailVirtual = username.toLowerCase() + emailDomain;
-
-    try {
-        if (isRegisterMode) {
-            if (!emailAsli) { toast('Isi email asli Anda.'); return; }
-            // 1. Buat Auth dengan email virtual
-            const userCred = await createUserWithEmailAndPassword(auth, emailVirtual, password);
-            // 2. Set displayName
-            await updateProfile(userCred.user, { displayName: username });
-            // 3. Simpan email asli & username ke database
-            await set(ref(db, `users/${userCred.user.uid}/profile`), {
-                username: username,
-                email: emailAsli
-            });
-            toast('Akun berhasil dibuat!');
-        } else {
-            // Login dengan email virtual
-            await signInWithEmailAndPassword(auth, emailVirtual, password);
-        }
-    } catch (error) {
-        console.error(error);
-        if (error.code === 'auth/email-already-in-use') toast('Username sudah dipakai.');
-        else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') toast('Username atau password salah.');
-        else toast('Error: ' + error.message);
-    }
-};
 
 // Google Login
 document.getElementById('googleLoginBtn').addEventListener('click', async () => {
   const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
   try {
     const result = await signInWithPopup(auth, provider);
-    // Set username dari Google displayName atau email prefix
-    const uname = result.user.displayName || result.user.email.split('@')[0];
-    await set(ref(db, `users/${result.user.uid}/profile/username`), uname);
+    // Simpan username dari Google displayName jika belum ada
+    if (!result.user.displayName) {
+      const uname = result.user.email.split('@')[0];
+      await updateProfile(result.user, { displayName: uname });
+      await set(ref(db, `users/${result.user.uid}/profile/username`), uname);
+    } else {
+      // Pastikan username tersimpan di DB
+      await set(ref(db, `users/${result.user.uid}/profile/username`), result.user.displayName);
+    }
+    toast('Berhasil masuk dengan Google!');
+    // onAuthStateChanged akan otomatis redirect
   } catch (error) {
     console.error(error);
-    toast('Gagal login Google: ' + error.message);
+    if (error.code === 'auth/popup-closed-by-user') toast('Popup ditutup. Coba lagi.');
+    else if (error.code === 'auth/unauthorized-domain') toast('Domain belum diizinkan di Firebase Console.');
+    else toast('Gagal login Google: ' + error.message);
   }
 });
 
@@ -450,25 +400,25 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 });
 
 /* ============================================================
-   AUTH STATE
+   AUTH STATE — LANGSUNG REDIRECT KE DASHBOARD
    ============================================================ */
 onAuthStateChanged(auth, (user) => {
   if (user) {
     currentUser = user;
+    
+    // Sembunyikan auth, tampilkan main app
     authScreen.classList.add('hidden');
     mainApp.classList.remove('hidden');
     
     // Tentukan username
     let uname = user.displayName;
-    if(!uname && user.email) {
-        uname = user.email.split('@')[0];
-    }
+    if(!uname && user.email) uname = user.email.split('@')[0];
     currentUsername = uname || "USER";
     
     document.getElementById('userStatus').textContent = '● ' + currentUsername;
     document.getElementById('greetingText').textContent = `HAI, ${currentUsername.toUpperCase()}!`;
     
-    // Ambil username dari DB jika ada (untuk memastikan)
+    // Ambil username dari DB jika ada
     onValue(ref(db, `users/${user.uid}/profile/username`), (snap) => {
         if(snap.exists()) {
             currentUsername = snap.val();
@@ -609,7 +559,7 @@ document.getElementById('clearHistory').addEventListener('click',async ()=>{
 });
 
 /* ============================================================
-   WALLET & PEMBAYARAN
+   WALLET
    ============================================================ */
 function renderWallet(){
   document.getElementById('walletBalance').textContent=rupiah(walletState.balance);
@@ -632,28 +582,11 @@ async function saveWallet(newState) {
   await set(ref(db, `users/${currentUser.uid}/wallet`), newState);
 }
 
-// Fungsi untuk menghasilkan QRIS Dinamis (Sederhana)
-function generateDynamicQRIS(amount) {
-    if (!STATIC_QRIS_STRING || STATIC_QRIS_STRING.includes("CONTOH")) {
-        return null;
-    }
-    // Implementasi sederhana: Kita hanya menampilkan QR berisi string statis + nominal (Ini bukan QRIS dinamis yang valid secara teknis)
-    // Untuk QRIS dinamis yang benar, Anda perlu library seperti qris-dinamis.
-    // Di sini, kita gunakan API publik sederhana untuk demonstrasi (TIDAK UNTUK PRODUKSI).
-    // Karena kita tidak punya backend, kita akan tampilkan pesan agar user transfer manual via QRIS statis.
-    // SEBAGAI GANTI: Kita tampilkan gambar QR dari string statis (bukan dinamis).
-    // Untuk fungsionalitas "otomatis", idealnya gunakan library qris-dinamis di backend.
-    
-    // Untuk saat ini, kita tampilkan placeholder.
-    return null; 
-}
-
-// Listener perubahan metode deposit
+// Perubahan metode deposit
 document.getElementById('depositMethod').addEventListener('change', (e) => {
     const method = e.target.value;
     const danaInst = document.getElementById('danaInstruction');
     const qrisCont = document.getElementById('qrisContainer');
-    const amount = Number(document.getElementById('depositAmount').value) || 0;
     
     if (method === 'DANA') {
         danaInst.classList.remove('hidden');
@@ -661,25 +594,8 @@ document.getElementById('depositMethod').addEventListener('change', (e) => {
     } else {
         danaInst.classList.add('hidden');
         qrisCont.classList.remove('hidden');
-        // Generate QRIS jika nominal ada
-        if (amount >= 1000) {
-            // Untuk demo, kita gunakan API publik untuk generate QR (bukan QRIS dinamis valid)
-            // Karena tidak ada library QRIS dinamis di client-side tanpa backend.
-            // Kita tampilkan instruksi saja.
-            const qrisArea = document.getElementById('qrisImageArea');
-            qrisArea.innerHTML = `<div style="font-size:10px;padding:10px;background:#f0f0f0;border-radius:8px">Fitur QRIS otomatis memerlukan backend. Silakan transfer manual ke DANA 085715913912 lalu catat setoran.</div>`;
-        } else {
-            document.getElementById('qrisImageArea').innerHTML = '<div style="font-size:10px;color:#999">Masukkan nominal minimal Rp1.000 untuk melihat QRIS.</div>';
-        }
-    }
-});
-
-// Update nominal saat diketik
-document.getElementById('depositAmount').addEventListener('input', (e) => {
-    const amount = Number(e.target.value) || 0;
-    const method = document.getElementById('depositMethod').value;
-    if (method === 'QRIS' && amount >= 1000) {
-        // Placeholder
+        const qrisArea = document.getElementById('qrisImageArea');
+        qrisArea.innerHTML = `<div style="font-size:10px;padding:10px;background:#f0f0f0;border-radius:8px">Fitur QRIS otomatis memerlukan backend. Silakan transfer manual ke DANA 085715913912 lalu catat setoran.</div>`;
     }
 });
 
@@ -689,7 +605,6 @@ document.getElementById('depositBtn').addEventListener('click',async ()=>{
   const method=document.getElementById('depositMethod').value;
   if(!Number.isSafeInteger(amount)||amount<1000){toast('Masukkan nominal minimal Rp1.000.');return;}
   
-  // Konfirmasi manual
   const confirmMsg = method === 'DANA' 
     ? `Apakah Anda sudah mentransfer ${rupiah(amount)} ke DANA 085715913912?`
     : `Apakah Anda sudah membayar via QRIS sebesar ${rupiah(amount)}?`;
