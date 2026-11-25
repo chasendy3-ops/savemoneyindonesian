@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#f8f8fa">
-<title>Dashboard · Saving Indonesian Money</title>
+<title>Saving Indonesian Money · Firebase</title>
 <style>
-:root{--ink:#202126;--muted:#777b84;--line:#e2e3e8;--paper:#fff;--soft:#f5f6f8;--glow:0 8px 30px rgba(125,130,145,.14)}
+:root{--ink:#202126;--muted:#777b84;--line:#e2e3e8;--silver:#c8cbd3;--paper:#fff;--soft:#f5f6f8;--glow:0 8px 30px rgba(125,130,145,.14)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:radial-gradient(ellipse at 50% 0%,#fff 0,#f8f8fa 58%,#f0f1f4 100%);color:var(--ink);font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;min-height:100vh}
-button,input,select,textarea{font:inherit}
+button,input,textarea{font:inherit}
 button{cursor:pointer;touch-action:manipulation}
 .wrap{width:min(1080px,100%);margin:auto;padding:24px 18px 46px}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:26px}
@@ -34,7 +34,7 @@ button{cursor:pointer;touch-action:manipulation}
 .target-row{display:flex;gap:8px;margin-top:14px}
 .target-row input{width:100%;min-width:0;border:1px solid var(--line);border-radius:11px;padding:11px;background:#fafafa;outline:none;font-size:12px}
 .target-row input:focus{border-color:#a6aab4;box-shadow:0 0 0 3px #d9dbe344}
-.btn{border:0;border-radius:11px;padding:11px 14px;background:#25272d;color:white;font-size:11px;font-weight:700;transition:transform .15s}
+.btn{border:0;border-radius:11px;padding:11px 14px;background:#25272d;color:white;font-size:11px;font-weight:700;transition:transform .15s,box-shadow .15s}
 .btn:active{transform:scale(.98)}
 .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .btn.secondary{background:#f0f1f4;color:#373a42;border:1px solid #e0e2e8}
@@ -73,36 +73,16 @@ button{cursor:pointer;touch-action:manipulation}
 .remove-one{border:0;background:transparent;color:#999;padding:5px 0 5px 8px;font-size:10px}
 .empty{padding:27px;text-align:center;color:var(--muted);font-size:11px;line-height:1.8;border:1px dashed #d7d9df;border-radius:15px;background:#ffffff80}
 .footer{text-align:center;color:#9699a2;font-size:9px;line-height:1.8;margin-top:30px}
+.creator-credit{display:inline-block;margin-top:7px;color:#777b84;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
 .toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,20px);background:#25272d;color:#fff;padding:12px 17px;border-radius:12px;font-size:11px;box-shadow:0 8px 28px #0002;opacity:0;pointer-events:none;transition:.25s;z-index:5;max-width:calc(100% - 30px);text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
-/* WITHDRAW / MONEY SAVING ID */
-.withdraw-section{margin-top:28px}
-.withdraw-card{background:#fff;border:1px solid #e4e5ea;border-radius:20px;padding:20px;box-shadow:var(--glow)}
-.withdraw-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0}
-.step{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fafafd}
-.step.active{border-color:#888e9b;box-shadow:0 0 0 2px #dfe1e855}
-.step-number{font-size:9px;color:var(--muted);letter-spacing:.15em}
-.step h3{font-size:12px;margin:8px 0}
-.field-label{display:block;font-size:10px;color:var(--muted);margin:13px 0 7px}
-.field{width:100%;border:1px solid var(--line);border-radius:11px;background:#fafafa;padding:12px;outline:none;font:inherit;font-size:12px}
-.field:focus{border-color:#a6aab4;box-shadow:0 0 0 3px #d9dbe344}
-.withdraw-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.withdraw-actions .btn{flex:1}
-.withdraw-note{font-size:10px;color:var(--muted);line-height:1.8;margin-top:10px}
-.receipt-wrap{display:none;margin-top:18px}
-.receipt{background:#fff;color:#202126;border:1px solid #e6e6e6;border-radius:20px;padding:24px;max-width:720px;margin:auto;box-shadow:0 8px 30px #7772;font-family:Consolas,"Liberation Mono",monospace}
-.receipt-brand{text-align:center;font-family:Georgia,serif;font-size:clamp(25px,5vw,42px);font-weight:900;letter-spacing:.02em;margin:0}
-.receipt-sub{text-align:center;font-size:12px;font-weight:800;margin:9px 0 22px}
-.receipt-line{border:0;border-top:2px dashed #c6c7cb;margin:20px 0}
-.receipt-row{display:flex;justify-content:space-between;gap:15px;font-size:12px;font-weight:700;margin:12px 0}
-.receipt-row span:last-child{text-align:right;overflow-wrap:anywhere}
-.receipt-section-title{font-weight:900;font-size:13px;margin:0 0 14px}
-.receipt-purpose{font-size:12px;line-height:1.8;overflow-wrap:anywhere}
-.receipt-barcode{height:70px;margin:24px 8px 8px;background:repeating-linear-gradient(90deg,#222 0 2px,transparent 2px 5px,#222 5px 6px,transparent 6px 9px,#222 9px 12px,transparent 12px 15px);position:relative}
-.receipt-barcode:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 0 8%,#fff 8% 8.4%,transparent 8.4% 21%,#fff 21% 21.5%,transparent 21.5% 49%,#fff 49% 49.5%,transparent 49.5% 76%,#fff 76% 76.5%,transparent 76.5%)}
-.receipt-thanks{text-align:center;font-weight:800;font-size:11px;line-height:1.8;margin-top:16px}
-.receipt-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:13px}
+.withdraw-section{margin-top:28px}.withdraw-card{background:#fff;border:1px solid #e4e5ea;border-radius:20px;padding:20px;box-shadow:var(--glow)}
+.withdraw-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:15px 0}.step{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fafafd}.step.active{border-color:#888e9b;box-shadow:0 0 0 2px #dfe1e855}.step-number{font-size:9px;color:var(--muted);letter-spacing:.15em}.step h3{font-size:12px;margin:8px 0}.field-label{display:block;font-size:10px;color:var(--muted);margin:13px 0 7px}.field{width:100%;border:1px solid var(--line);border-radius:11px;background:#fafafa;padding:12px;outline:none;font:inherit;font-size:12px}.field:focus{border-color:#a6aab4;box-shadow:0 0 0 3px #d9dbe344}.withdraw-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.withdraw-actions .btn{flex:1}.withdraw-note{font-size:10px;color:var(--muted);line-height:1.8;margin-top:10px}
+.receipt-wrap{display:none;margin-top:18px}.receipt{background:#fff;color:#202126;border:1px solid #e6e6e6;border-radius:20px;padding:24px;max-width:720px;margin:auto;box-shadow:0 8px 30px #7772;font-family:Consolas,"Liberation Mono",monospace}.receipt-brand{text-align:center;font-family:Georgia,serif;font-size:clamp(25px,5vw,42px);font-weight:900;letter-spacing:.02em;margin:0}.receipt-sub{text-align:center;font-size:12px;font-weight:800;margin:9px 0 22px}.receipt-line{border:0;border-top:2px dashed #c6c7cb;margin:20px 0}.receipt-row{display:flex;justify-content:space-between;gap:15px;font-size:12px;font-weight:700;margin:12px 0}.receipt-row span:last-child{text-align:right;overflow-wrap:anywhere}.receipt-section-title{font-weight:900;font-size:13px;margin:0 0 14px}.receipt-purpose{font-size:12px;line-height:1.8;overflow-wrap:anywhere}.receipt-barcode{height:70px;margin:24px 8px 8px;background:repeating-linear-gradient(90deg,#222 0 2px,transparent 2px 5px,#222 5px 6px,transparent 6px 9px,#222 9px 12px,transparent 12px 15px);position:relative}.receipt-barcode:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 0 8%,#fff 8% 8.4%,transparent 8.4% 21%,#fff 21% 21.5%,transparent 21.5% 49%,#fff 49% 49.5%,transparent 49.5% 76%,#fff 76% 76.5%,transparent 76.5%)}.receipt-thanks{text-align:center;font-weight:800;font-size:11px;line-height:1.8;margin-top:16px}.receipt-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:13px}
+@media(max-width:760px){.withdraw-steps{grid-template-columns:1fr}.receipt{padding:18px 14px}.receipt-row{font-size:10px}}
+@media(max-width:760px){.money-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard{grid-template-columns:1fr}.hero{padding:23px}.money-photo{height:112px}.wrap{padding:17px 13px 35px}.add-panel{align-items:flex-start;flex-direction:column}.add-actions{width:100%}.add-actions .btn{flex:1}}
+@media(min-width:761px) and (max-width:950px){.money-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
 /* KALKULATOR */
 .calc-section{margin-top:28px}
@@ -117,9 +97,7 @@ button{cursor:pointer;touch-action:manipulation}
 .calc-btn.clear{background:#fff0f0;color:#b33;border-color:#f0d0d0}
 .calc-note{font-size:10px;color:var(--muted);margin-top:12px;line-height:1.7}
 
-@media(max-width:760px){.money-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard{grid-template-columns:1fr}.hero{padding:23px}.money-photo{height:112px}.wrap{padding:17px 13px 35px}.add-panel{align-items:flex-start;flex-direction:column}.add-actions{width:100%}.add-actions .btn{flex:1}.withdraw-steps{grid-template-columns:1fr}.receipt{padding:18px 14px}.receipt-row{font-size:10px}}
-@media(min-width:761px) and (max-width:950px){.money-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-
+/* Overlay & Popup */
 #loadingOverlay{position:fixed;inset:0;background:rgba(248,248,250,.95);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
 .spinner{width:40px;height:40px;border:3px solid #e0e2e8;border-top-color:#25272d;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -214,7 +192,6 @@ button{cursor:pointer;touch-action:manipulation}
     <div class="history-list" id="historyList"></div>
   </section>
 
-  <!-- MONEY SAVING ID -->
   <section class="withdraw-section">
     <div class="section-head"><div><h2>Ambil uang tabungan</h2><p>Isi nominal dan tujuan penggunaan uang. Jumlah penarikan tidak boleh melebihi saldo tabungan.</p></div><span class="eyebrow">WITHDRAW</span></div>
     <div class="withdraw-card">
@@ -280,7 +257,7 @@ button{cursor:pointer;touch-action:manipulation}
     </div>
   </section>
 
-  <footer class="footer">SAVING INDONESIAN MONEY<br>REALTIME EDITION · APP CREATED BY SENDY<br><span>Data tersinkronisasi antar perangkat.</span></footer>
+  <footer class="footer">SAVING INDONESIAN MONEY<br>REALTIME EDITION<br><span>Data tersinkronisasi antar perangkat.</span><br><span class="creator-credit">App created by Sendy</span></footer>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -299,7 +276,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, set, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-/* ===== FIREBASE CONFIG ===== */
+/* ===== FIREBASE CONFIG (SAMA DENGAN index.html) ===== */
 const firebaseConfig = {
   apiKey: "AIzaSyDvtfOD8TEPMzxYxaEQqvbV-QORyEgRHQc",
   authDomain: "savingmoney1.firebaseapp.com",
@@ -395,10 +372,8 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   window.location.replace('login.html');
 });
 
-/* ===== SALDO TABUNGAN (net) ===== */
-function getBalance(){
-  return savings.reduce((sum,item)=>sum+(item.type==='withdraw'?-1:1)*Number(item.value||0),0);
-}
+/* ===== BALANCE (net) ===== */
+function getBalance(){return savings.reduce((sum,item)=>sum+(item.type==='withdraw'?-1:1)*Number(item.value||0),0);}
 
 /* ===== MONEY GRID ===== */
 const moneyOptions = [
@@ -422,11 +397,7 @@ function renderMoney(){
       ? `<img src="${m.file}" alt="${m.label}" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><div class="photo-placeholder" style="display:none"><span class="symbol">▤</span><span class="note">FOTO UANG</span></div>`
       : `<div class="photo-placeholder"><span class="symbol">▤</span><span class="note">FOTO UANG</span></div>`;
     card.innerHTML=`<div class="money-photo">${photoMarkup}</div><div class="money-value">${m.label}</div><div class="money-desc">Uang Rupiah Indonesia</div><button class="select-btn" type="button">${selected===m.value?'✓ Dipilih':'Pilih nominal'}</button>`;
-    card.querySelector('button').addEventListener('click',()=>{
-      selected=m.value;
-      renderMoney();
-      document.getElementById('selectedValue').textContent=rupiah(selected);
-    });
+    card.querySelector('button').addEventListener('click',()=>{selected=m.value;renderMoney();document.getElementById('selectedValue').textContent=rupiah(selected);});
     card.addEventListener('dblclick',()=>{selected=m.value;addSavings();});
     grid.appendChild(card);
   });
@@ -434,18 +405,18 @@ function renderMoney(){
 
 function renderHistory(){
   historyList.innerHTML='';
-  if(!savings.length){historyList.innerHTML='<div class="empty">Belum ada tabungan.<br>Pilih nominal uang di atas untuk memulai.</div>';return;}
+  if(!savings.length){historyList.innerHTML='<div class="empty">Belum ada transaksi.<br>Pilih nominal uang di atas untuk mulai menabung.</div>';return;}
   [...savings].reverse().forEach(item=>{
     const row=document.createElement('div');row.className='history-item';
     const date=new Date(item.date);
     const dateText=isNaN(date)?'Tanggal tidak tersedia':date.toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});
-    const isWithdraw = item.type==='withdraw';
+    const isWithdraw=item.type==='withdraw';
     const money = moneyOptions.find(m=>Number(m.value)===Number(item.value));
     const imageSrc = money && !isWithdraw ? money.file : '';
     const thumb = imageSrc
       ? `<img src="${imageSrc}" alt="${item.label}" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span class="history-fallback" style="display:none">FOTO</span>`
       : `<span class="history-fallback">${isWithdraw?'↘ TARIK':'FOTO UANG'}</span>`;
-    row.innerHTML=`<div class="history-left"><div class="history-icon">${thumb}</div><div><div class="history-title">${isWithdraw?'Penarikan':'Menabung'} · ${item.label}</div><div class="history-date">${dateText}${isWithdraw&&item.purpose?' · '+escapeHtml(item.purpose):''}</div></div></div><div style="display:flex;align-items:center;gap:8px"><div class="history-amount" style="color:${isWithdraw?'#a33':'inherit'}">${isWithdraw?'−':'+'}${rupiah(item.value)}</div><button class="remove-one">✕</button></div>`;
+    row.innerHTML=`<div class="history-left"><div class="history-icon">${thumb}</div><div><div class="history-title">${isWithdraw?'Penarikan':'Menabung'} · ${item.label}</div><div class="history-date">${dateText}${isWithdraw&&item.purpose?' · '+escapeHtml(item.purpose):''}</div></div></div><div style="display:flex;align-items:center;gap:8px"><div class="history-amount" style="color:${isWithdraw?'#a33':'inherit'}">${isWithdraw?'−':'+'}${rupiah(item.value)}</div><button class="remove-one" aria-label="Hapus transaksi">✕</button></div>`;
     row.querySelector('.remove-one').addEventListener('click',async ()=>{
       if(!currentUser) return;
       await remove(ref(db, `users/${currentUser.uid}/savings/${item.id}`));
@@ -456,7 +427,7 @@ function renderHistory(){
 }
 
 function render(){
-  const total = getBalance();
+  const total=getBalance();
   document.getElementById('total').textContent=rupiah(total);
   document.getElementById('count').textContent=savings.length;
   const percent=target>0?Math.min(100,Math.round(total/target*100)):0;
@@ -469,53 +440,39 @@ function render(){
   document.getElementById('selectedValue').textContent=selected?rupiah(selected):'Belum dipilih';
 }
 
-function updateWithdrawBalance(){
-  const el=document.getElementById('withdrawBalanceNote');
-  if(el) el.textContent='Saldo tersedia: '+rupiah(Math.max(0,getBalance()));
-}
+function updateWithdrawBalance(){const el=document.getElementById('withdrawBalanceNote');if(el)el.textContent='Saldo tersedia: '+rupiah(Math.max(0,getBalance()));}
 
-/* ===== PERBAIKAN: Tambah ke Tabungan ===== */
+/* ===== ADD SAVINGS (Firebase fix) ===== */
 document.getElementById('addMoney').addEventListener('click', addSavings);
 
 async function addSavings(){
   if(!selected){
-    showPopup('warning', 'Belum Memilih', 'Pilih nominal uang terlebih dahulu dengan menekan salah satu kartu uang.');
+    showPopup('warning','Belum Memilih','Pilih nominal uang terlebih dahulu dengan menekan salah satu kartu uang.');
     return;
   }
-  if(!currentUser){
-    showPopup('error', 'Sesi Habis', 'Silakan login ulang.');
-    return;
-  }
-
+  if(!currentUser){ showPopup('error','Sesi Habis','Silakan login ulang.'); return; }
   const item = moneyOptions.find(m => m.value === selected);
-  if(!item){
-    showPopup('error', 'Nominal Tidak Dikenal', 'Nominal uang tidak valid. Silakan pilih ulang.');
-    return;
-  }
+  if(!item){ showPopup('error','Nominal Tidak Dikenal','Silakan pilih ulang.'); return; }
 
-  const btn = document.getElementById('addMoney');
-  const originalText = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = 'Menyimpan...';
+  const btn=document.getElementById('addMoney');
+  const orig=btn.textContent;
+  btn.disabled=true; btn.textContent='Menyimpan...';
 
-  try {
+  try{
     await push(ref(db, `users/${currentUser.uid}/savings`), {
       value: item.value,
       label: item.label,
       date: new Date().toISOString()
     });
-
-    selected = null;
-    document.getElementById('selectedValue').textContent = 'Belum dipilih';
+    selected=null;
+    document.getElementById('selectedValue').textContent='Belum dipilih';
     renderMoney();
-
-    showPopup('success', 'Berhasil Ditambahkan', `${item.label} berhasil masuk ke tabungan Anda.`);
-  } catch (err) {
-    console.error('Gagal menambah tabungan:', err);
-    showPopup('error', 'Gagal Menyimpan', 'Terjadi kesalahan: ' + (err.message || 'Coba lagi.'));
-  } finally {
-    btn.disabled = false;
-    btn.textContent = originalText;
+    showPopup('success','Berhasil Ditambahkan', `${item.label} berhasil masuk ke tabungan Anda.`);
+  }catch(err){
+    console.error(err);
+    showPopup('error','Gagal Menyimpan', err.message || 'Coba lagi.');
+  }finally{
+    btn.disabled=false; btn.textContent=orig;
   }
 }
 
@@ -524,18 +481,21 @@ document.getElementById('clearSelection').addEventListener('click',()=>{selected
 document.getElementById('saveTarget').addEventListener('click',async ()=>{
   if(!currentUser) return;
   const value=Math.floor(Number(document.getElementById('targetInput').value));
-  if(!Number.isFinite(value)||value<0){toast('Target tidak valid.');return;}
+  if(!Number.isFinite(value)||value<0){toast('Masukkan target yang valid.');return;}
   await set(ref(db, `users/${currentUser.uid}/target`), value);
-  toast(value>0?'Target disimpan.':'Target dihapus.');
+  toast(value>0?'Target tabungan disimpan.':'Target tabungan dihapus.');
 });
 
 document.getElementById('clearHistory').addEventListener('click',async ()=>{
   if(!currentUser) return;
-  if(!savings.length){toast('Riwayat kosong.');return;}
-  if(confirm('Hapus semua riwayat tabungan?')){ await set(ref(db, `users/${currentUser.uid}/savings`), null); toast('Semua riwayat dihapus.'); }
+  if(!savings.length){toast('Riwayat masih kosong.');return;}
+  if(confirm('Hapus semua riwayat tabungan? Tindakan ini tidak dapat dibatalkan.')){
+    await set(ref(db, `users/${currentUser.uid}/savings`), null);
+    toast('Semua riwayat dihapus.');
+  }
 });
 
-/* ===== WITHDRAW (MONEY SAVING ID) ===== */
+/* ===== WITHDRAW ===== */
 document.getElementById('resetWithdraw').addEventListener('click',()=>{
   document.getElementById('withdrawAmount').value='';
   document.getElementById('withdrawPurpose').value='';
@@ -551,8 +511,7 @@ document.getElementById('makeReceipt').addEventListener('click',()=>{
   if(!Number.isFinite(amount)||amount<=0){toast('Masukkan nominal penarikan yang valid.');return;}
   if(amount>balance){toast('Nominal melebihi saldo tabungan.');return;}
   if(!purpose){toast('Isi tujuan penggunaan uang terlebih dahulu.');return;}
-  const now=new Date();
-  const trx='SENDY-'+String(Math.floor(Math.random()*1000000)).padStart(6,'0');
+  const now=new Date();const trx='SENDY-'+String(Math.floor(Math.random()*1000000)).padStart(6,'0');
   pendingWithdrawal={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),value:amount,label:rupiah(amount),purpose,date:now.toISOString(),trx};
   document.getElementById('receiptId').textContent=trx;
   document.getElementById('receiptDate').textContent=now.toLocaleDateString('id-ID');
@@ -561,25 +520,20 @@ document.getElementById('makeReceipt').addEventListener('click',()=>{
   document.getElementById('receiptBalance').textContent=rupiah(balance-amount);
   document.getElementById('receiptPurpose').textContent=purpose;
   document.getElementById('receiptWrap').style.display='block';
-  document.getElementById('stepOne').classList.add('active');
-  document.getElementById('stepTwo').classList.add('active');
+  document.getElementById('stepOne').classList.add('active');document.getElementById('stepTwo').classList.add('active');
   document.getElementById('receiptWrap').scrollIntoView({behavior:'smooth',block:'start'});
 });
 
-document.getElementById('confirmWithdraw').addEventListener('click', async () => {
-  if(!pendingWithdrawal){ toast('Buat detail transaksi terlebih dahulu.'); return; }
+document.getElementById('confirmWithdraw').addEventListener('click', async ()=>{
+  if(!pendingWithdrawal){toast('Buat detail transaksi terlebih dahulu.');return;}
   if(!currentUser) return;
-  if(pendingWithdrawal.value > getBalance()){
-    toast('Saldo berubah dan tidak mencukupi. Buat ulang detail transaksi.');
-    return;
-  }
+  if(pendingWithdrawal.value>getBalance()){toast('Saldo berubah dan tidak mencukupi. Buat ulang detail transaksi.');return;}
 
-  const btn = document.getElementById('confirmWithdraw');
-  const originalText = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = 'Memproses...';
+  const btn=document.getElementById('confirmWithdraw');
+  const orig=btn.textContent;
+  btn.disabled=true; btn.textContent='Memproses...';
 
-  try {
+  try{
     await push(ref(db, `users/${currentUser.uid}/savings`), {
       value: pendingWithdrawal.value,
       label: pendingWithdrawal.label,
@@ -588,108 +542,84 @@ document.getElementById('confirmWithdraw').addEventListener('click', async () =>
       date: pendingWithdrawal.date,
       trx: pendingWithdrawal.trx
     });
-
-    document.getElementById('receiptWrap').style.display = 'none';
-    document.getElementById('withdrawAmount').value = '';
-    document.getElementById('withdrawPurpose').value = '';
-    pendingWithdrawal = null;
-
-    showPopup('success', 'Penarikan Dicatat', 'Saldo tabungan telah dikurangi.');
-  } catch (err) {
-    console.error('Gagal mencatat penarikan:', err);
-    showPopup('error', 'Gagal Menyimpan', err.message || 'Coba lagi.');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = originalText;
+    document.getElementById('receiptWrap').style.display='none';
+    document.getElementById('withdrawAmount').value='';
+    document.getElementById('withdrawPurpose').value='';
+    pendingWithdrawal=null;
+    showPopup('success','Penarikan Dicatat','Saldo tabungan telah dikurangi.');
+  }catch(err){
+    console.error(err);
+    showPopup('error','Gagal Menyimpan', err.message || 'Coba lagi.');
+  }finally{
+    btn.disabled=false; btn.textContent=orig;
   }
 });
 
 document.getElementById('downloadReceipt').addEventListener('click',()=>{
   if(!pendingWithdrawal){toast('Buat detail transaksi terlebih dahulu.');return;}
-  const r=pendingWithdrawal;const now=new Date(r.date);
-  const canvas=document.createElement('canvas');canvas.width=1000;canvas.height=1350;
-  const ctx=canvas.getContext('2d');
-  ctx.fillStyle='#f1f1f1';ctx.fillRect(0,0,1000,1350);
-  function roundRect(c,x,y,w,h,rad){c.beginPath();c.moveTo(x+rad,y);c.arcTo(x+w,y,x+w,y+h,rad);c.arcTo(x+w,y+h,x,y+h,rad);c.arcTo(x,y+h,x,y,rad);c.arcTo(x,y,x+w,y,rad);c.closePath();}
-  ctx.fillStyle='#fff';roundRect(ctx,60,45,880,1215,28);ctx.fill();
-  ctx.fillStyle='#171717';ctx.textAlign='center';ctx.font='bold 56px Georgia';ctx.fillText('MONEY SAVING ID',500,130);
-  ctx.font='bold 24px monospace';ctx.fillText('DETAIL TRANSAKSI PENARIKAN',500,178);
+  const r=pendingWithdrawal;const now=new Date(r.date);const canvas=document.createElement('canvas');canvas.width=1000;canvas.height=1350;const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#f1f1f1';ctx.fillRect(0,0,1000,1350);ctx.fillStyle='#fff';roundRect(ctx,60,45,880,1215,28);ctx.fill();
+  ctx.fillStyle='#171717';ctx.textAlign='center';ctx.font='bold 56px Georgia';ctx.fillText('MONEY SAVING ID',500,130);ctx.font='bold 24px monospace';ctx.fillText('DETAIL TRANSAKSI PENARIKAN',500,178);
   function line(y){ctx.strokeStyle='#bfc0c4';ctx.lineWidth=2;ctx.setLineDash([7,9]);ctx.beginPath();ctx.moveTo(115,y);ctx.lineTo(885,y);ctx.stroke();ctx.setLineDash([])}
   function row(label,value,y){ctx.textAlign='left';ctx.font='bold 21px monospace';ctx.fillStyle='#202126';ctx.fillText(label,115,y);ctx.textAlign='right';ctx.fillText(value,885,y)}
   function section(t,y){ctx.textAlign='left';ctx.font='bold 24px monospace';ctx.fillText(t,115,y)}
-  line(220);row('NO TRX',r.trx,270);row('STATUS','SUCCESS',315);
-  row('TANGGAL',now.toLocaleDateString('id-ID'),360);
-  row('JAM',now.toLocaleTimeString('id-ID',{hour12:false}),405);
-  line(445);section('DETAIL PENARIKAN',495);
-  row('Nominal diambil',rupiah(r.value),545);
-  row('Sisa tabungan',rupiah(Math.max(0,getBalance())),590);
-  line(630);section('TUJUAN PENGGUNAAN UANG',680);
-  ctx.textAlign='left';ctx.font='22px monospace';
-  const words=r.purpose.split(/\s+/);let lineText='',y=725;
-  for(const word of words){const test=lineText?lineText+' '+word:word;if(ctx.measureText(test).width>760){ctx.fillText(lineText,115,y);lineText=word;y+=34;}else lineText=test;}
-  if(lineText)ctx.fillText(lineText,115,y);
-  const sepY=Math.max(805,y+38);line(sepY);
-  row('Metode','CATATAN TABUNGAN',sepY+45);row('Status','SUCCESS',sepY+90);
+  line(220);row('NO TRX',r.trx,270);row('STATUS','SUCCESS',315);row('TANGGAL',now.toLocaleDateString('id-ID'),360);row('JAM',now.toLocaleTimeString('id-ID',{hour12:false}),405);line(445);section('DETAIL PENARIKAN',495);row('Nominal diambil',rupiah(r.value),545);row('Sisa tabungan',rupiah(getBalance()-r.value),590);line(630);section('TUJUAN PENGGUNAAN UANG',680);
+  ctx.textAlign='left';ctx.font='22px monospace';const words=r.purpose.split(/\s+/);let lineText='',y=725;for(const word of words){const test=lineText?lineText+' '+word:word;if(ctx.measureText(test).width>760){ctx.fillText(lineText,115,y);lineText=word;y+=34;}else lineText=test;}if(lineText)ctx.fillText(lineText,115,y);
+  const sepY=Math.max(805,y+38);line(sepY);row('Metode','CATATAN TABUNGAN',sepY+45);row('Status','SUCCESS',sepY+90);
   const barY=sepY+125;let x=125;while(x<875){const w=(Math.random()>.7?5:2);ctx.fillRect(x,barY,w,72);x+=w+3;}
-  ctx.textAlign='center';ctx.font='bold 18px monospace';
-  ctx.fillText('Terimakasih Telah menabung disini,',500,barY+112);
-  ctx.fillText('Semoga Uang Nya Dipakai dengan Baik ya!',500,barY+142);
+  ctx.textAlign='center';ctx.font='bold 18px monospace';ctx.fillText('Terimakasih Telah menabung disini,',500,barY+112);ctx.fillText('Semoga Uang Nya Dipakai dengan Baik ya!',500,barY+142);
+  function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
   const a=document.createElement('a');a.download=(r.trx||'SENDY-transaksi')+'.png';a.href=canvas.toDataURL('image/png');a.click();
 });
 
 /* ===== KALKULATOR ===== */
-let calcExpr = '';
-let calcJustEvaluated = false;
-const calcCurrent = document.getElementById('calcCurrent');
-const calcHistory = document.getElementById('calcHistory');
+let calcExpr='';
+let calcJustEvaluated=false;
+const calcCurrent=document.getElementById('calcCurrent');
+const calcHistory=document.getElementById('calcHistory');
 
 function calcUpdate(){
   calcCurrent.textContent = calcExpr || '0';
   calcHistory.textContent = calcJustEvaluated ? '' : (calcExpr.length>20 ? '…' : '');
 }
-
 function calcSafeEval(expr){
   if(!/^[0-9+\-*/%.()\s]+$/.test(expr)) return NaN;
   try{
-    let e = expr.replace(/%/g,'/100');
+    const e = expr.replace(/%/g,'/100');
     const result = Function('"use strict";return ('+e+')')();
     return Number(result);
   }catch(e){return NaN;}
 }
-
 document.querySelectorAll('[data-calc]').forEach(btn=>{
   btn.addEventListener('click',()=>{
-    const v = btn.getAttribute('data-calc');
-    if(v==='C'){ calcExpr=''; calcJustEvaluated=false; calcUpdate(); return; }
-    if(v==='DEL'){ calcExpr = calcExpr.slice(0,-1); calcJustEvaluated=false; calcUpdate(); return; }
+    const v=btn.getAttribute('data-calc');
+    if(v==='C'){calcExpr='';calcJustEvaluated=false;calcUpdate();return;}
+    if(v==='DEL'){calcExpr=calcExpr.slice(0,-1);calcJustEvaluated=false;calcUpdate();return;}
     if(v==='='){
       if(!calcExpr) return;
-      const res = calcSafeEval(calcExpr);
+      const res=calcSafeEval(calcExpr);
       if(Number.isFinite(res)){
-        const formatted = (Math.round(res*1e8)/1e8).toString();
-        calcHistory.textContent = calcExpr + ' =';
-        calcExpr = formatted;
-        calcJustEvaluated = true;
-        calcCurrent.textContent = new Intl.NumberFormat('id-ID',{maximumFractionDigits:8}).format(res);
-      } else {
-        calcHistory.textContent = 'Error';
-        calcExpr=''; calcJustEvaluated=false;
-        calcCurrent.textContent='0';
+        const formatted=(Math.round(res*1e8)/1e8).toString();
+        calcHistory.textContent=calcExpr+' =';
+        calcExpr=formatted;calcJustEvaluated=true;
+        calcCurrent.textContent=new Intl.NumberFormat('id-ID',{maximumFractionDigits:8}).format(res);
+      }else{
+        calcHistory.textContent='Error';calcExpr='';calcJustEvaluated=false;calcCurrent.textContent='0';
       }
       return;
     }
-    if(calcJustEvaluated && /[0-9.]/.test(v)){ calcExpr=''; }
+    if(calcJustEvaluated && /[0-9.]/.test(v)){calcExpr='';}
     calcJustEvaluated=false;
-    const ops = ['+','-','*','/','%'];
-    const last = calcExpr.slice(-1);
+    const ops=['+','-','*','/','%'];
+    const last=calcExpr.slice(-1);
     if(ops.includes(v) && ops.includes(last) && calcExpr.length>0){
-      calcExpr = calcExpr.slice(0,-1) + v;
-    } else {
-      calcExpr += v;
+      calcExpr=calcExpr.slice(0,-1)+v;
+    }else{
+      calcExpr+=v;
     }
     calcUpdate();
   });
 });
 </script>
 </body>
-  </html>
+                                          </html>
